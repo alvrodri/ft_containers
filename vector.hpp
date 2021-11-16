@@ -199,6 +199,32 @@ namespace ft {
 				this->swap(tmp);
 			}
 
+			iterator	erase(iterator pos) {
+				if (pos != this->end()) {
+					iterator	ret;
+
+					ret = iterator(&(*pos));
+					for (iterator it = pos; it != this->end() - 1; it++) {
+						this->_allocator.construct(&(*it), *(&(*it) + 1));
+						this->_allocator.destroy(&(*it) + 1);
+					}
+					this->_size--;
+					return (ret);
+				}
+				return (this->end());
+			}
+
+			iterator	erase(iterator first, iterator last) {
+				size_type	i = 0;
+				size_type	diff = last - first;
+
+				while (i < diff) {
+					this->erase(first);
+					i++;
+				}
+				return (first);
+			}
+
 			void	push_back(const const_reference &val) {
 				pointer	tmp;
 
