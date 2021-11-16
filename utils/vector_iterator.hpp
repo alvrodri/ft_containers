@@ -13,12 +13,13 @@ namespace ft {
 			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::pointer			pointer;
 			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::reference			reference;
 			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::difference_type	difference_type;
+			typedef T*																				iterator_type;
 
 			VectorIterator(): _p(NULL) {}
 			VectorIterator(T *x): _p(x) {}
 			VectorIterator(const VectorIterator &copy): _p(copy._p) {}
 
-			pointer		base() const { return (this->_p); }
+			iterator_type	base() const { return (this->_p); }
 
 			reference	operator*() const { return (*this->_p); }
 			pointer		operator->() const { return (this->_p); }

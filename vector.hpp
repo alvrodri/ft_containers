@@ -4,6 +4,7 @@
 #include "./utils/iterator_traits.hpp"
 #include "./utils/iterator.hpp"
 #include "./utils/vector_iterator.hpp"
+#include "./utils/vector_reverse_iterator.hpp"
 
 namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
@@ -21,8 +22,8 @@ namespace ft {
 			typedef VectorIterator<T>							iterator;
 			typedef VectorIterator<T>							const_iterator;
 
-			//typedef VectorReverseIterator						reverse_iterator;
-			//typedef VectorReverseIterator						const_reverse_iterator;
+			typedef VectorReverseIterator<T>					reverse_iterator;
+			typedef VectorReverseIterator<T>					const_reverse_iterator;
 
 			/* functions */
 			vector(): _size(0), _capacity(1) {
@@ -37,6 +38,21 @@ namespace ft {
 				for (size_type i = 0; i < count; i++) {
 					this->push_back(value);
 				}
+			}
+
+			vector(VectorIterator<T> first, VectorIterator<T> last, const Allocator& alloc = Allocator()) {
+				this->_size = last - first;
+				this->_capacity = last - first;
+				this->_allocator = alloc;
+				this->_pointer = this->_allocator.allocate(this->_capacity);
+				while (first != last) {
+					this->push_back(*first);
+					first++;
+				}
+			}
+
+			vector(const vector &other) {
+				this->operator=(other);
 			}
 
 			~vector() {
@@ -68,7 +84,7 @@ namespace ft {
 			}
 
 			allocator_type	get_allocator() const {
-				retuern (this->_allocator);
+				return (this->_allocator);
 			}
 			/* functions */
 
@@ -298,22 +314,22 @@ namespace ft {
 			const_iterator	end() const {
 				return (iterator(const_cast<pointer>(&this->_pointer[this->_size])));
 			}
-/*
+
 			reverse_iterator	rbegin() {
-				return (VectorReverseIterator(this->_end - 1));
+				return (reverse_iterator(&this->_pointer[this->_size - 1]));
 			}
 
 			const_reverse_iterator	rbegin() const {
-				return (VectorReverseIterator(const_cast<pointer>(this->_end - 1)));
+				return (const_reverse_iterator(const_cast<pointer>(&this->_pointer[this->_size - 1])));
 			}
 
 			reverse_iterator	rend() {
-				return (VectorReverseIterator(this->_start - 1));
+				return (reverse_iterator(&this->_pointer[-1]));
 			}
 
 			const_reverse_iterator	rend() const {
-				return (VectorReverseIterator(const_cast<pointer>(this->_start - 1)));
-			}*/
+				return (const_reverse_iterator(const_cast<pointer>(&this->_pointer[-1])));
+			}
 			/* iterators */
 		private:
 			size_type		_size;

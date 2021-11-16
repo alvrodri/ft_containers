@@ -6,7 +6,7 @@
 #    By: alvrodri <alvrodri@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/12 17:35:33 by alvrodri          #+#    #+#              #
-#    Updated: 2021/11/16 11:45:16 by alvrodri         ###   ########.fr        #
+#    Updated: 2021/11/16 13:17:03 by alvrodri         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
+CXXFLAGS = -Wall -Wextra -Werror
 
 $(NAME):	$(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)

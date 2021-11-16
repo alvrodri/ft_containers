@@ -12,6 +12,8 @@ int	main() {
 		vec.push_back(3);
 		vec.push_back(4);
 
+		vec.erase(vec.begin(), vec.begin() + 2);
+
 		for (ft::vector<int>::iterator it = vec.begin(); it != vec.end(); it++) {
 			std::cout << *it << std::endl;
 		}
