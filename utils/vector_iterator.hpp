@@ -7,17 +7,20 @@
 namespace ft {
 	template<typename T>
 	class	VectorIterator : public ft::s_iterator<std::random_access_iterator_tag, T> {
-		private:
-			T	*_p;
 		public:
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::pointer			pointer;
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::reference			reference;
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::difference_type	difference_type;
-			typedef T*																				iterator_type;
+			typedef typename ft::iterator_traits<T>				iterator_traits;
+			typedef typename iterator_traits::pointer			pointer;
+			typedef typename iterator_traits::reference			reference;
+			typedef typename iterator_traits::difference_type	difference_type;
+			typedef pointer										iterator_type;
 
 			VectorIterator(): _p(NULL) {}
-			VectorIterator(T *x): _p(x) {}
-			VectorIterator(const VectorIterator &copy): _p(copy._p) {}
+			explicit VectorIterator(iterator_type x): _p(x) {}
+
+			template<class U> 
+			VectorIterator(const VectorIterator<U> &other) {
+				this->_p = other.base();
+			}
 
 			iterator_type	base() const { return (this->_p); }
 
@@ -35,6 +38,8 @@ namespace ft {
 			VectorIterator	operator--(int) { VectorIterator tmp(*this); operator--(); return (tmp); }
 			VectorIterator	&operator-=(difference_type n) { this->_p -= n; return (*this); }
 			VectorIterator	operator-(difference_type n) const { VectorIterator tmp(*this); tmp._p -= n; return (tmp);}
+		private:
+			pointer	_p;
 	};
 
 	template<class Iterator1, class Iterator2>
@@ -73,8 +78,8 @@ namespace ft {
 		return (tmp);
 	}
 
-	template<class Iterator>
-	typename VectorIterator<Iterator>::difference_type operator-(const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator>& rhs) {
+	template<class Iterator, class Iterator2>
+	typename VectorIterator<Iterator>::difference_type operator-(const VectorIterator<Iterator>& lhs, const VectorIterator<Iterator2>& rhs) {
 		return (lhs.base() - rhs.base());
 	}
 };

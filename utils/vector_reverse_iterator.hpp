@@ -8,19 +8,28 @@ namespace ft {
 	template<typename T>
 	class	VectorReverseIterator : public ft::s_iterator<std::random_access_iterator_tag, T> {
 		public:
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::pointer			pointer;
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::reference			reference;
-			typedef typename ft::s_iterator<std::random_access_iterator_tag, T>::difference_type	difference_type;
-			typedef typename ft::VectorIterator<T>													iterator_type;
+			typedef typename ft::iterator_traits<T>				iterator_traits;
+			typedef typename iterator_traits::pointer			pointer;
+			typedef typename iterator_traits::reference			reference;
+			typedef typename iterator_traits::difference_type	difference_type;
+			typedef VectorIterator<T>							iterator_type;
 
 			VectorReverseIterator(): _iterator(NULL) {}
-			VectorReverseIterator(T *x): _iterator(x) {}
-			VectorReverseIterator(const VectorIterator<T> it): _iterator(it.base()) {}
-			VectorReverseIterator(const VectorReverseIterator<T> &copy): _iterator(copy._iterator) {}
+			explicit VectorReverseIterator(iterator_type x): _iterator(x) {}
+
+			template<class U> 
+			VectorReverseIterator(const VectorIterator<U> &other) {
+				this->_iterator = other;
+			}
+
+			template<class U> 
+			VectorReverseIterator(const VectorReverseIterator<U> &other) {
+				this->_iterator = other.base();
+			}
 
 			iterator_type	base() const { return (this->_iterator); }
 
-			reference	operator*() const { return (*this->_iterator); }
+			reference	operator*() const { T tmp = this->_iterator; return *(--tmp); }
 			pointer		operator->() const { return (&(*this->_iterator)); }
 
 			reference	operator[](difference_type index) const { return (*(_iterator + index)); }
@@ -76,6 +85,11 @@ namespace ft {
 
 	template<class Iterator>
 	typename VectorReverseIterator<Iterator>::difference_type operator-(const VectorReverseIterator<Iterator>& lhs, const VectorReverseIterator<Iterator>& rhs) {
+		return (lhs.base() - rhs.base());
+	}
+
+	template<class Iterator, class Iterator2>
+	typename VectorReverseIterator<Iterator>::difference_type operator-(const VectorReverseIterator<Iterator>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
 		return (lhs.base() - rhs.base());
 	}
 };

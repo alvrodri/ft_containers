@@ -1,4 +1,5 @@
 #include "./vector.hpp"
+#include "./stack.hpp"
 #include "./utils/iterator_traits.hpp"
 #include <vector>
 
@@ -6,17 +7,26 @@
 
 int	main() {
 	{
-		ft::vector<int>	vec;
+		/*ft::vector<int>	vec;
 		vec.push_back(1);
 		vec.push_back(2);
 		vec.push_back(3);
 		vec.push_back(4);
 
-		vec.erase(vec.begin(), vec.begin() + 2);
-
 		for (ft::vector<int>::iterator it = vec.begin(); it != vec.end(); it++) {
 			std::cout << *it << std::endl;
-		}
+		}*/
+		ft::vector<int> myvector (10);  // 5 default-constructed ints
+		ft::vector<int>::reverse_iterator rit = myvector.rbegin();
+
+		int i=0;
+		for (rit = myvector.rbegin(); rit!= myvector.rend(); ++rit)
+			*rit = ++i;
+
+		std::cout << "myvector contains:";
+		for (ft::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+			std::cout << ' ' << *it;
+		std::cout << '\n';
 		/*ft::vector<int>	vec;
 
 		vec.push_back(1);

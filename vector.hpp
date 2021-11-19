@@ -19,18 +19,23 @@ namespace ft {
 			typedef	ptrdiff_t									difference_type;
 			typedef	size_t										size_type;
 
-			typedef VectorIterator<T>							iterator;
-			typedef VectorIterator<T>							const_iterator;
+			typedef VectorIterator<pointer>						iterator;
+			typedef VectorIterator<const_pointer>				const_iterator;
 
-			typedef VectorReverseIterator<T>					reverse_iterator;
-			typedef VectorReverseIterator<T>					const_reverse_iterator;
+			typedef VectorReverseIterator<iterator>				reverse_iterator;
+			typedef VectorReverseIterator<const_iterator>		const_reverse_iterator;
 
 			/* functions */
 			vector(): _size(0), _capacity(1) {
 				this->_pointer = this->_allocator.allocate(1);
 			}
 
-			vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) {
+			explicit vector(const Allocator &alloc) {
+				this->_allocator = alloc;
+				this->_pointer = this->_allocator.allocate(1);
+			}
+
+			explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) {
 				this->_size = 0;
 				this->_capacity = 1;
 				this->_allocator = alloc;
@@ -40,7 +45,8 @@ namespace ft {
 				}
 			}
 
-			vector(VectorIterator<T> first, VectorIterator<T> last, const Allocator& alloc = Allocator()) {
+			template<class InputIt>
+			vector(VectorIterator<InputIt> first, VectorIterator<InputIt> last, const Allocator &alloc = Allocator() ) {
 				this->_size = last - first;
 				this->_capacity = last - first;
 				this->_allocator = alloc;
@@ -51,26 +57,24 @@ namespace ft {
 				}
 			}
 
-			vector(const vector &other) {
-				this->operator=(other);
+			vector(const vector &other): _size(other._size), _capacity(other._capacity), _allocator(other._allocator) {
+				this->_pointer = this->_allocator.allocate(this->_capacity);
+				for (size_type i = 0; i < this->_size; i++)
+					this->_allocator.construct(&this->_pointer[i], other[i]);
 			}
 
 			~vector() {
-				for (iterator it = this->begin(); it != this->end(); it++) {
-					this->_allocator.destroy(&(*it));
-				}
+				this->_allocator.deallocate(this->_pointer, this->_capacity);
 			}
 
 			vector	&operator=(const vector &other) {
+				this->clear();
+				this->_allocator.deallocate(this->_pointer, this->_capacity);
 				this->_size = other._size;
 				this->_capacity = other._capacity;
-				this->_allocator = other._allocator;
-				this->_pointer = other._pointer;
-
-				iterator	newit = this->begin();
-				for (iterator it = other.begin(); it != other.end(); it++) {
-					*newit = *it;
-					newit++;
+				this->_pointer = this->_allocator.allocate(this->_capacity);
+				for (size_type i = 0; i < other._size; i++) {
+					this->_allocator.construct(&this->_pointer[i], other[i]);
 				}
 				return (*this);
 			}
@@ -159,10 +163,9 @@ namespace ft {
 
 			/* modifiers */
 			void	clear() {
-				for (iterator it = this->begin(); it != this->end(); it++) {
-					*it = 0;
+				while (this->_size > 0) {
+					this->pop_back();
 				}
-				this->_size = 0;
 			}
 
 			iterator	insert(iterator pos, const_reference value) {
@@ -260,7 +263,8 @@ namespace ft {
 			}
 
 			void	pop_back() {
-				this->_size--;
+				if (this->_size)
+					this->_allocator.destroy(&this->_pointer[--this->_size]);
 			}
 
 			void	resize(size_type count, T value = T()) {
@@ -304,7 +308,7 @@ namespace ft {
 			}
 
 			const_iterator	begin() const {
-				return (iterator(const_cast<pointer>(&this->_pointer[0])));
+				return (const_iterator(&this->_pointer[0]));
 			}
 
 			iterator	end() {
@@ -312,23 +316,23 @@ namespace ft {
 			}
 
 			const_iterator	end() const {
-				return (iterator(const_cast<pointer>(&this->_pointer[this->_size])));
+				return (const_iterator(&this->_pointer[this->_size]));
 			}
 
 			reverse_iterator	rbegin() {
-				return (reverse_iterator(&this->_pointer[this->_size - 1]));
+				return (reverse_iterator(this->end() - 1));
 			}
 
 			const_reverse_iterator	rbegin() const {
-				return (const_reverse_iterator(const_cast<pointer>(&this->_pointer[this->_size - 1])));
+				return (const_reverse_iterator(this->end() - 1));
 			}
 
 			reverse_iterator	rend() {
-				return (reverse_iterator(&this->_pointer[-1]));
+				return (reverse_iterator(this->begin() - 1));
 			}
 
 			const_reverse_iterator	rend() const {
-				return (const_reverse_iterator(const_cast<pointer>(&this->_pointer[-1])));
+				return (const_reverse_iterator(this->begin() - 1));
 			}
 			/* iterators */
 		private:

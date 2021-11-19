@@ -3,7 +3,7 @@
 #include "vector.hpp"
 
 namespace ft {
-	template<class T, class Container = std::vector<T> >
+	template<class T, class Container = ft::vector<T> >
 	class stack {
 		public:
 			typedef Container									container_type;
@@ -22,6 +22,11 @@ namespace ft {
 
 			~stack() {
 				
+			}
+
+			stack	&operator=(const stack &other) {
+				this->_c = other._c;
+				return (*this);
 			}
 
 			/* element access */
@@ -53,7 +58,33 @@ namespace ft {
 				this->_c.pop_back();
 			}
 			/* modifiers */
-		private:
+
+			/* non-member */
+			friend bool operator==(const stack<T, Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c == rhs._c);
+			}
+
+			friend bool operator!=(const stack<T,Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c != rhs._c);
+			}
+
+			friend bool operator<(const stack<T,Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c < rhs._c);
+			}
+
+			friend bool operator<=(const stack<T, Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c <= rhs._c);
+			}
+
+			friend bool operator>(const stack<T, Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c > rhs._c);
+			}
+
+			friend bool operator>=(const stack<T, Container> &lhs, const stack<T, Container> &rhs) {
+				return (lhs._c >= rhs._c);
+			}
+			/* non-member */
+		protected:
 			container_type	_c;
 	};
 };
