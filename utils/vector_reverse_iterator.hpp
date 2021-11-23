@@ -30,9 +30,9 @@ namespace ft {
 			iterator_type	base() const { return (this->_iterator); }
 
 			reference	operator*() const { T tmp = this->base(); return *--tmp; }
-			pointer		operator->() const { return (&(*this->_iterator)); }
+			pointer		operator->() const { return (&(this->operator*())); }
 
-			reference	operator[](difference_type index) const { return (*(_iterator + index)); }
+			reference	operator[](difference_type index) const { return (this->base()[-index - 1]); }
 
 			VectorReverseIterator	&operator++() { _iterator--; return (*this); }
 			VectorReverseIterator	operator++(int) { VectorReverseIterator tmp(*this); operator++(); return (tmp);}
@@ -59,37 +59,31 @@ namespace ft {
 
 	template<class Iterator1, class Iterator2>
 	bool	operator>(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
-		return lhs.base() > rhs.base();
-	}
-
-	template<class Iterator1, class Iterator2>
-	bool	operator>=(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
-		return lhs.base() >= rhs.base();
-	}
-
-	template<class Iterator1, class Iterator2>
-	bool	operator<(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
 		return lhs.base() < rhs.base();
 	}
 
 	template<class Iterator1, class Iterator2>
-	bool	operator<=(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
+	bool	operator>=(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
 		return lhs.base() <= rhs.base();
+	}
+
+	template<class Iterator1, class Iterator2>
+	bool	operator<(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
+		return lhs.base() > rhs.base();
+	}
+
+	template<class Iterator1, class Iterator2>
+	bool	operator<=(const VectorReverseIterator<Iterator1>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
+		return lhs.base() >= rhs.base();
 	}
 
 	template<class Iterator>
 	VectorReverseIterator<Iterator> operator+(typename VectorReverseIterator<Iterator>::difference_type n, const VectorReverseIterator<Iterator> &it) {
-		VectorReverseIterator<Iterator>	tmp(it.base() + n);
-		return (tmp);
-	}
-
-	template<class Iterator>
-	typename VectorReverseIterator<Iterator>::difference_type operator-(const VectorReverseIterator<Iterator>& lhs, const VectorReverseIterator<Iterator>& rhs) {
-		return (lhs.base() - rhs.base());
+		return (VectorReverseIterator<Iterator>(it.base() - n));
 	}
 
 	template<class Iterator, class Iterator2>
 	typename VectorReverseIterator<Iterator>::difference_type operator-(const VectorReverseIterator<Iterator>& lhs, const VectorReverseIterator<Iterator2>& rhs) {
-		return (lhs.base() - rhs.base());
+		return (rhs.base() - lhs.base());
 	}
 };

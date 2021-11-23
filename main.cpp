@@ -5,21 +5,27 @@
 #include "./containers_test/srcs/vector/common.hpp"
 
 #define LEAKS 0
-#define TESTED_NAMESPACE ft
 #define TESTED_TYPE foo
 
 int	main() {
 	const int size = 5;
-	TESTED_NAMESPACE::vector<TESTED_TYPE> vct(size);
-	TESTED_NAMESPACE::vector<TESTED_TYPE>::reverse_iterator it(vct.rbegin());
-	TESTED_NAMESPACE::vector<TESTED_TYPE>::const_reverse_iterator ite(vct.rend());
+	ft::vector<TESTED_TYPE> vct(size);
+	ft::vector<TESTED_TYPE>::reverse_iterator it(vct.rbegin());
+	ft::vector<TESTED_TYPE>::const_reverse_iterator ite(vct.rend());
 
-	for (; it != ite; it++) {
-		std::cout << *it << std::endl;
+	for (int i = 0; i < size; ++i) {
+		it[i] = (size - i) * 5;
 	}
-	//printSize(vct, 1);
 
-	/*it = vct.rbegin();
+	/*it = it + 5;
+	it = 1 + it;
+	it = it - 4;
+	std::cout << *it << std::endl;
+	std::cout << *(it += 2) << std::endl;
+	std::cout << *(it -= 1) << std::endl;*/
+	//printSize(vct, 1);
+/*
+	it = vct.rbegin();
 	ite = vct.rbegin();
 
 	std::cout << *(++ite) << std::endl;
