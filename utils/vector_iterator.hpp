@@ -39,7 +39,7 @@ namespace ft {
 			VectorIterator	&operator-=(difference_type n) { this->_p -= n; return (*this); }
 			VectorIterator	operator-(difference_type n) const { VectorIterator tmp(*this); tmp._p -= n; return (tmp);}
 		private:
-			pointer	_p;
+			iterator_type	_p;
 	};
 
 	template<class Iterator1, class Iterator2>

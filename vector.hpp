@@ -5,6 +5,7 @@
 #include "./utils/iterator.hpp"
 #include "./utils/vector_iterator.hpp"
 #include "./utils/vector_reverse_iterator.hpp"
+#include "./utils/utils.hpp"
 
 namespace ft {
 	template <class T, class Allocator = std::allocator<T> >
@@ -37,19 +38,20 @@ namespace ft {
 
 			explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) {
 				this->_size = 0;
-				this->_capacity = 1;
+				this->_capacity = count;
 				this->_allocator = alloc;
-				this->_pointer = this->_allocator.allocate(1);
+				this->_pointer = this->_allocator.allocate(this->_capacity);
 				for (size_type i = 0; i < count; i++) {
 					this->push_back(value);
 				}
 			}
 
-			template<class InputIt>
-			vector(VectorIterator<InputIt> first, VectorIterator<InputIt> last, const Allocator &alloc = Allocator() ) {
-				this->_size = last - first;
-				this->_capacity = last - first;
+			template<class InputIt >
+			vector(InputIt first, InputIt last, const Allocator &alloc = Allocator(),
+					typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = NULL) {
+				this->_size = 0;
 				this->_allocator = alloc;
+				this->_capacity = 1;
 				this->_pointer = this->_allocator.allocate(this->_capacity);
 				while (first != last) {
 					this->push_back(*first);
@@ -80,10 +82,18 @@ namespace ft {
 			}
 
 			void	assign(size_type count, const_reference value) {
-				if (count > this->_capacity)
-					return ;
+				this->clear();
 				for (size_type i = 0; i < count; i++) {
-					this->_pointer[i] = value;
+					this->push_back(value);
+				}
+			}
+
+			template<class InputIt>
+			void	assign(InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = NULL) {
+				this->clear();
+				while (first != last) {
+					this->push_back(*first);
+					first++;
 				}
 			}
 
@@ -201,7 +211,9 @@ namespace ft {
 				this->swap(tmp);
 			}
 
-			void	insert(iterator pos, iterator first, iterator last) {
+			template<class InputIt>
+			void	insert(iterator pos, InputIt first, InputIt last,
+					typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = NULL) {
 				vector		tmp;
 				iterator	it = this->begin();
 

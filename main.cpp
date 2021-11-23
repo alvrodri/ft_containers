@@ -2,10 +2,59 @@
 #include "./stack.hpp"
 #include "./utils/iterator_traits.hpp"
 #include <vector>
+#include "./containers_test/srcs/vector/common.hpp"
 
 #define LEAKS 0
+#define TESTED_NAMESPACE ft
+#define TESTED_TYPE foo
 
 int	main() {
+	const int size = 5;
+	TESTED_NAMESPACE::vector<TESTED_TYPE> vct(size);
+	TESTED_NAMESPACE::vector<TESTED_TYPE>::reverse_iterator it(vct.rbegin());
+	TESTED_NAMESPACE::vector<TESTED_TYPE>::const_reverse_iterator ite(vct.rend());
+
+	for (; it != ite; it++) {
+		std::cout << *it << std::endl;
+	}
+	//printSize(vct, 1);
+
+	/*it = vct.rbegin();
+	ite = vct.rbegin();
+
+	std::cout << *(++ite) << std::endl;
+	std::cout << *(ite++) << std::endl;
+	std::cout << *ite++ << std::endl;
+	std::cout << *++ite << std::endl;
+
+	it->m();
+	ite->m();
+
+	std::cout << *(++it) << std::endl;
+	std::cout << *(it++) << std::endl;
+	std::cout << *it++ << std::endl;
+	std::cout << *++it << std::endl;
+
+	std::cout << *(--ite) << std::endl;
+	std::cout << *(ite--) << std::endl;
+	std::cout << *--ite << std::endl;
+	std::cout << *ite-- << std::endl;
+
+	(*it).m();
+	(*ite).m();
+
+	std::cout << *(--it) << std::endl;
+	std::cout << *(it--) << std::endl;
+	std::cout << *it-- << std::endl;
+	std::cout << *--it << std::endl;
+	vct = vct_copy;
+	vct_copy = vct_range;
+	vct_range.clear();
+
+	std::cout << "\t-- PART TWO --" << std::endl;
+	printSize(vct);
+	printSize(vct_range);
+	printSize(vct_copy);*/
 	{
 		/*ft::vector<int>	vec;
 		vec.push_back(1);
@@ -16,7 +65,7 @@ int	main() {
 		for (ft::vector<int>::iterator it = vec.begin(); it != vec.end(); it++) {
 			std::cout << *it << std::endl;
 		}*/
-		ft::vector<int> myvector (10);  // 5 default-constructed ints
+		/*ft::vector<int> myvector (10);  // 5 default-constructed ints
 		ft::vector<int>::reverse_iterator rit = myvector.rbegin();
 
 		int i=0;
@@ -26,7 +75,7 @@ int	main() {
 		std::cout << "myvector contains:";
 		for (ft::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 			std::cout << ' ' << *it;
-		std::cout << '\n';
+		std::cout << '\n';*/
 		/*ft::vector<int>	vec;
 
 		vec.push_back(1);

@@ -12,7 +12,7 @@ namespace ft {
 			typedef typename iterator_traits::pointer			pointer;
 			typedef typename iterator_traits::reference			reference;
 			typedef typename iterator_traits::difference_type	difference_type;
-			typedef VectorIterator<T>							iterator_type;
+			typedef T											iterator_type;
 
 			VectorReverseIterator(): _iterator(NULL) {}
 			explicit VectorReverseIterator(iterator_type x): _iterator(x) {}
@@ -29,18 +29,18 @@ namespace ft {
 
 			iterator_type	base() const { return (this->_iterator); }
 
-			reference	operator*() const { T tmp = this->_iterator; return *(--tmp); }
+			reference	operator*() const { T tmp = this->base(); return *--tmp; }
 			pointer		operator->() const { return (&(*this->_iterator)); }
 
 			reference	operator[](difference_type index) const { return (*(_iterator + index)); }
 
-			VectorReverseIterator	&operator++() { --_iterator; return (*this); }
-			VectorReverseIterator	operator++(int) { VectorReverseIterator tmp(*this); operator--(); return (tmp); }
+			VectorReverseIterator	&operator++() { _iterator--; return (*this); }
+			VectorReverseIterator	operator++(int) { VectorReverseIterator tmp(*this); operator++(); return (tmp);}
 			VectorReverseIterator	&operator+=(difference_type n) { this->_iterator -= n; return (*this); }
 			VectorReverseIterator	operator+(difference_type n) const { VectorReverseIterator tmp(*this); tmp._iterator -= n; return (tmp);}
 
-			VectorReverseIterator	&operator--() { ++_iterator; return (*this); }
-			VectorReverseIterator	operator--(int) { VectorReverseIterator tmp(*this); operator++(); return (tmp); }
+			VectorReverseIterator	&operator--() { _iterator++; return (*this); }
+			VectorReverseIterator	operator--(int) { VectorReverseIterator tmp(*this); operator--(); return (tmp); }
 			VectorReverseIterator	&operator-=(difference_type n) { this->_iterator += n; return (*this); }
 			VectorReverseIterator	operator-(difference_type n) const { VectorReverseIterator tmp(*this); tmp._iterator += n; return (tmp);}
 			private:
