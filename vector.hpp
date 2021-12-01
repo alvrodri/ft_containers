@@ -46,7 +46,7 @@ namespace ft {
 				}
 			}
 
-			template<class InputIt >
+			template<class InputIt>
 			vector(InputIt first, InputIt last, const Allocator &alloc = Allocator(),
 					typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = NULL) {
 				this->_size = 0;
