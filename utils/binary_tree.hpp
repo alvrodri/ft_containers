@@ -2,17 +2,26 @@
 
 #include "./utils.hpp"
 #include "./pair.hpp"
+#include "./binary_tree_iterator.hpp"
 
 namespace ft {
 	template<class T1, class T2, class Allocator>
 	class binary_tree {
 		private:
+			typedef enum	e_color {
+				RED,
+				BLACK
+			}				t_color;
+
 			typedef struct	s_node {
 				ft::pair<T1, T2>	data;
+				struct s_node		*parent;
 				struct s_node		*left;
 				struct s_node		*right;
+				t_color				color;
 
-				s_node(ft::pair<T1, T2> data): data(data), left(NULL), right(NULL) {}
+				s_node(ft::pair<T1, T2> data): data(data), parent(NULL), left(NULL), right(NULL), color(BLACK) {}
+				s_node(ft::pair<T1, T2> data, t_color color): data(data), parent(NULL), left(NULL), right(NULL), color(color) {}
 			}				t_node;
 
 			typedef Allocator											allocator;
@@ -24,13 +33,17 @@ namespace ft {
 			node_pointer	_root;
 			int				_size;
 		public:
-			binary_tree() {
-				this->_root = this->_allocator.allocate(1);
-				this->_allocator.construct(this->_root, t_node(ft::make_pair<T1, T2>(T1(), T2())));
-				this->_size++;
-			}
+			typedef binary_tree_iterator<node_pointer>					iterator;
+			typedef binary_tree_iterator<const node_pointer>			const_iterator;
+
+			binary_tree(): _root(NULL), _size(0) {}
 
 			binary_tree(t_node *node): _root(node), _size(0) {}
+
+			binary_tree(ft::pair<T1, T2> pair): _size(1) {
+				this->_root = this->_allocator.allocate(1);
+				this->_allocator.construct(this->_root, t_node(pair));
+			}
 
 			virtual ~binary_tree() {
 				this->_allocator.deallocate(this->_root, this->_size);
@@ -49,29 +62,74 @@ namespace ft {
 							return (this->lookup(node->right, key));
 					}
 				}
+				return (NULL);
 			}
 
-			node_pointer	insert(node_pointer root, ft::pair<T1, T2> data) {
+			node_pointer	insert(node_pointer	root, ft::pair<T1, T2> pair) {
+				node_pointer	node = this->_allocator.allocate(1);
+				this->_allocator.construct(node, t_node(pair));
+
 				if (root == NULL) {
-					root = this->_allocator.allocate(1);
-					this->_allocator.construct(root, t_node(data));
-					this->_size++;
-				} else {
-					if (data.first <= root->data.first)
-						root->left = this->insert(root->left, data);
-					else
-						root->right = this->insert(root->right, data);
-					return (root);
+					return (node);
 				}
+				node_pointer	parent = root->parent, current = root;
+				while (current != NULL) {
+					parent = current;
+					if (current->data.first <= pair.first) {
+						current = current->right;
+					} else {
+						current = current->left;
+					}
+				}
+				if (parent->data.first <= pair.first) {
+					parent->right = node;
+				} else {
+					parent->left = node;
+				}
+				node->parent = parent;
 				return (root);
 			}
 
-			node_pointer	getRoot() const {
+			void	insert(ft::pair<T1, T2> pair) {
+				this->insert(this->_root, pair);
+			}
+
+			node_pointer	getRoot() {
 				return (this->_root);
 			}
 
-			t_node	*getNode(void *pointer) const {
-				return (reinterpret_cast<t_node *>(pointer));
+			iterator	begin() {
+				return (binary_tree_iterator<node_pointer>(this->_root, this->_root));
+			}
+
+			const_iterator	begin() const {
+				return (binary_tree_iterator<const node_pointer>(this->_root, this->_root));
+			}
+
+			iterator	end() {
+				return binary_tree_iterator<node_pointer>(NULL, this->_root);
+			}
+
+			const_iterator	end() const {
+				return binary_tree_iterator<const node_pointer>(NULL, this->_root);
+			}
+
+			void print(const std::string& prefix, const t_node *node, bool isLeft) {
+				if (node != NULL) {
+					std::cout << prefix;
+					std::cout << (isLeft ? "├──" : "└──" );
+					std::cout << (node->color == RED ? "\033[31m" : "") << node->data.first << "\033[0m" << " (" << node->data.second << ")" << std::endl;
+					print( prefix + (isLeft ? "│   " : "    "), node->left, true);
+					print( prefix + (isLeft ? "│   " : "    "), node->right, false);
+				}
+			}
+
+			void print(const t_node *node) {
+				print("", node, false);
+			}
+
+			int	size() const {
+				return (this->_size);
 			}
 	};
 };
