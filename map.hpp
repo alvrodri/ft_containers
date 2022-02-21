@@ -12,20 +12,21 @@ namespace ft {
 		class Allocator = std::allocator<ft::pair<const Key, T> > >
 		class map {
 			public:
-				typedef Key														key_type;
-				typedef T														mapped_type;
-				typedef ft::pair<const Key, T>									value_type;
-				typedef size_t													size_type;
-				typedef ptrdiff_t												difference_type;
-				typedef Compare													key_compare;
-				typedef Allocator												allocator_type;
-				typedef typename allocator_type::reference						reference;
-				typedef typename allocator_type::const_reference				const_reference;
-				typedef typename allocator_type::pointer						pointer;
-				typedef typename allocator_type::const_pointer					const_pointer;
+				typedef Key															key_type;
+				typedef T															mapped_type;
+				typedef ft::pair<const Key, T>										value_type;
+				typedef size_t														size_type;
+				typedef ptrdiff_t													difference_type;
+				typedef Compare														key_compare;
+				typedef Allocator													allocator_type;
+				typedef typename allocator_type::reference							reference;
+				typedef typename allocator_type::const_reference					const_reference;
+				typedef typename allocator_type::pointer							pointer;
+				typedef typename allocator_type::const_pointer						const_pointer;
+				typedef binary_tree<key_type, mapped_type, allocator_type>			tree_type;
 
-				typedef typename binary_tree<Key, T, Allocator>::iterator		iterator;
-				typedef typename binary_tree<Key, T, Allocator>::const_iterator	const_iterator;
+				typedef typename tree_type::iterator		iterator;
+				typedef typename tree_type::const_iterator	const_iterator;
 
 			class	value_compare {
 				public:
@@ -45,6 +46,7 @@ namespace ft {
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
 				this->_key_compare = comp;
 				this->_allocator = alloc;
+				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
 			}
 
 			/*template <class InputIterator>
@@ -75,7 +77,13 @@ namespace ft {
 
 			/* modifiers */
 			ft::pair<iterator, bool>	insert(const value_type &val) {
-				//if (this->_tree.lookup(val))
+				//iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), val.first);
+
+				/*if (lookup != this->end()) {
+					return (ft::make_pair(lookup, false));
+				}*/
+				this->_tree.insert(this->_tree.getRoot(), val);
+				return ft::make_pair(this->_tree.lookup(this->_tree.getRoot(), val.first), true);
 			}
 
 			/*iterator	insert(iterator position, const value_type &val) {
@@ -108,11 +116,23 @@ namespace ft {
 			}*/
 			/* modifiers */
 
+			iterator	begin() {
+				return this->_tree.begin();
+			}
+
+			iterator	end() {
+				return this->_tree.end();
+			}
+
+			binary_tree<Key, T, allocator_type>	getTree() {
+				return this->_tree;
+			}
+
 			private:
-				size_type							_size;
-				size_type							_capacity;
-				allocator_type						_allocator;
-				key_compare							_key_compare;
-				binary_tree<Key, T, allocator_type>	_tree;
+				size_type		_size;
+				size_type		_capacity;
+				allocator_type	_allocator;
+				key_compare		_key_compare;
+				tree_type		_tree;
 		};
 };

@@ -3,9 +3,10 @@
 #include "./binary_tree.hpp"
 #include "./iterator_traits.hpp"
 #include "./iterator.hpp"
+#include "./pair.hpp"
 
 namespace ft {
-	template<typename T>
+	template<typename T, typename Pair>
 	class	binary_tree_iterator : public ft::s_iterator<std::bidirectional_iterator_tag, T> {
 		public:
 			typedef typename ft::iterator_traits<T>				iterator_traits;
@@ -13,6 +14,9 @@ namespace ft {
 			typedef typename iterator_traits::reference			reference;
 			typedef typename iterator_traits::difference_type	difference_type;
 			typedef pointer										iterator_type;
+			typedef Pair										pair;
+			typedef pair*										pair_pointer;
+			typedef pair&										pair_reference;
 
 			binary_tree_iterator(): _p(NULL) {}
 			explicit binary_tree_iterator(iterator_type x, iterator_type root): _p(x), _root(root) {
@@ -20,16 +24,16 @@ namespace ft {
 					_p = _p->left;
 			}
 
-			template<class U> 
-			binary_tree_iterator(const binary_tree_iterator<U> &other) {
+			template<class U, class U2> 
+			binary_tree_iterator(const binary_tree_iterator<U, U2> &other) {
 				this->_p = other.base();
 				this->_root = other.getRoot();
 			}
 
 			iterator_type	base() const { return (this->_p); }
 
-			reference	operator*() const { return (*this->_p); }
-			pointer		operator->() const { return (this->_p); }
+			reference	operator*() const { return (*this->_p->data); }
+			pair_pointer	operator->() const { return (&(this->_p->data)); }
 
 			reference	operator[](difference_type index) const { return (*(_p + index)); }
 

@@ -33,8 +33,8 @@ namespace ft {
 			node_pointer	_root;
 			int				_size;
 		public:
-			typedef binary_tree_iterator<node_pointer>					iterator;
-			typedef binary_tree_iterator<const node_pointer>			const_iterator;
+			typedef binary_tree_iterator<node_pointer, ft::pair<T1, T2> >		iterator;
+			typedef binary_tree_iterator<const node_pointer, ft::pair<T1, T2> >	const_iterator;
 
 			binary_tree(): _root(NULL), _size(0) {}
 
@@ -49,12 +49,12 @@ namespace ft {
 				this->_allocator.deallocate(this->_root, this->_size);
 			}
 
-			ft::pair<T1, T2>		*lookup(node_pointer node, const T1 &key) {
+			iterator		lookup(node_pointer node, const T1 &key) {
 				if (node == NULL) {
-					return (NULL);
+					return (iterator(NULL, this->_root));
 				} else {
 					if (key == node->data.first)
-						return (&node->data);
+						return (iterator(node, this->_root));
 					else {
 						if (key < node->data.first)
 							return (this->lookup(node->left, key));
@@ -62,7 +62,7 @@ namespace ft {
 							return (this->lookup(node->right, key));
 					}
 				}
-				return (NULL);
+				return (iterator(NULL, this->_root));
 			}
 
 			node_pointer	insert(node_pointer	root, ft::pair<T1, T2> pair) {
@@ -70,6 +70,7 @@ namespace ft {
 				this->_allocator.construct(node, t_node(pair));
 
 				if (root == NULL) {
+					this->_root = node;
 					return (node);
 				}
 				node_pointer	parent = root->parent, current = root;
@@ -99,19 +100,19 @@ namespace ft {
 			}
 
 			iterator	begin() {
-				return (binary_tree_iterator<node_pointer>(this->_root, this->_root));
+				return (iterator(this->_root, this->_root));
 			}
 
 			const_iterator	begin() const {
-				return (binary_tree_iterator<const node_pointer>(this->_root, this->_root));
+				return (const_iterator(this->_root, this->_root));
 			}
 
 			iterator	end() {
-				return binary_tree_iterator<node_pointer>(NULL, this->_root);
+				return iterator(NULL, this->_root);
 			}
 
 			const_iterator	end() const {
-				return binary_tree_iterator<const node_pointer>(NULL, this->_root);
+				return const_iterator(NULL, this->_root);
 			}
 
 			void print(const std::string& prefix, const t_node *node, bool isLeft) {

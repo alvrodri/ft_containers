@@ -9,30 +9,14 @@ namespace ft {
 		first_type	first;
 		second_type	second;
 
-		pair() {
-			this->first = T1();
-			this->second = T2();
-		}
+		pair(): first(first_type()), second(second_type()) {}
 
-		template<class U, class V> pair(const pair<U, V> &pr) {
-			this->first = pr.first;
-			this->second = pr.second;
-		}
+		template<class U, class V>
+		pair(const pair<U, V> &pr): first(pr.first), second(pr.second) {}
 
-		pair(const first_type &a, const second_type &b) {
-			this->first = a;
-			this->second = b;
-		}
+		pair(const first_type &a, const second_type &b): first(a), second(b) {}
 
 		pair	&operator=(const pair &other) {
-			this->first = other.first;
-			this->second = other.second;
-
-			return (*this);
-		}
-
-		template<class U1, class U2>
-		pair	&operator=(const pair<U1, U2> &other) {
 			this->first = other.first;
 			this->second = other.second;
 
