@@ -8,17 +8,11 @@ namespace ft {
 	template<class T1, class T2, class Allocator>
 	class binary_tree {
 		private:
-			typedef enum	e_color {
-				RED,
-				BLACK
-			}				t_color;
-
 			typedef struct	s_node {
 				ft::pair<T1, T2>	data;
 				struct s_node		*parent;
 				struct s_node		*left;
 				struct s_node		*right;
-				t_color				color;
 
 				s_node(ft::pair<T1, T2> data): data(data), parent(NULL), left(NULL), right(NULL), color(BLACK) {}
 				s_node(ft::pair<T1, T2> data, t_color color): data(data), parent(NULL), left(NULL), right(NULL), color(color) {}
@@ -31,7 +25,6 @@ namespace ft {
 
 			node_allocator	_allocator;
 			node_pointer	_root;
-			int				_size;
 		public:
 			typedef binary_tree_iterator<node_pointer, ft::pair<T1, T2> >		iterator;
 			typedef binary_tree_iterator<const node_pointer, ft::pair<T1, T2> >	const_iterator;
@@ -96,7 +89,7 @@ namespace ft {
 			}
 
 			void	clear() {
-				
+
 			}
 
 			node_pointer	getRoot() {
@@ -121,24 +114,6 @@ namespace ft {
 
 			const_iterator	end() const {
 				return const_iterator(NULL, this->_root);
-			}
-
-			void print(const std::string& prefix, const t_node *node, bool isLeft) {
-				if (node != NULL) {
-					std::cout << prefix;
-					std::cout << (isLeft ? "├──" : "└──" );
-					std::cout << (node->color == RED ? "\033[31m" : "") << node->data.first << "\033[0m" << " (" << node->data.second << ")" << std::endl;
-					print( prefix + (isLeft ? "│   " : "    "), node->left, true);
-					print( prefix + (isLeft ? "│   " : "    "), node->right, false);
-				}
-			}
-
-			void print(const t_node *node) {
-				print("", node, false);
-			}
-
-			int	size() const {
-				return (this->_size);
 			}
 		private:
 			node_pointer	min(node_pointer hint) {
