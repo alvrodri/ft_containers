@@ -49,9 +49,9 @@ namespace ft {
 				this->_allocator.deallocate(this->_root, this->_size);
 			}
 
-			iterator		lookup(node_pointer node, const T1 &key) {
+			iterator		lookup(node_pointer node, const T1 &key) const {
 				if (node == NULL) {
-					return (iterator(NULL, this->_root));
+					return (this->end());
 				} else {
 					if (key == node->data.first)
 						return (iterator(node, this->_root));
@@ -62,16 +62,16 @@ namespace ft {
 							return (this->lookup(node->right, key));
 					}
 				}
-				return (iterator(NULL, this->_root));
+				return (this->end());
 			}
 
-			node_pointer	insert(node_pointer	root, ft::pair<T1, T2> pair) {
+			iterator	insert(node_pointer	root, ft::pair<T1, T2> pair) {
 				node_pointer	node = this->_allocator.allocate(1);
 				this->_allocator.construct(node, t_node(pair));
 
 				if (root == NULL) {
 					this->_root = node;
-					return (node);
+					return (iterator(node, this->_root));
 				}
 				node_pointer	parent = root->parent, current = root;
 				while (current != NULL) {
@@ -88,7 +88,7 @@ namespace ft {
 					parent->left = node;
 				}
 				node->parent = parent;
-				return (root);
+				return (iterator(root, this->_root));
 			}
 
 			void	insert(ft::pair<T1, T2> pair) {
@@ -99,12 +99,16 @@ namespace ft {
 				return (this->_root);
 			}
 
+			node_pointer	getRoot() const {
+				return (this->_root);
+			}
+
 			iterator	begin() {
-				return (iterator(this->_root, this->_root));
+				return (iterator(min(this->_root), this->_root));
 			}
 
 			const_iterator	begin() const {
-				return (const_iterator(this->_root, this->_root));
+				return (const_iterator(min(this->_root), this->_root));
 			}
 
 			iterator	end() {
@@ -131,6 +135,42 @@ namespace ft {
 
 			int	size() const {
 				return (this->_size);
+			}
+		private:
+			node_pointer	min(node_pointer hint) {
+				node_pointer	tmp = hint;
+
+				while (tmp->left) {
+					tmp = tmp->left;
+				}
+				return tmp;
+			}
+
+			const node_pointer	min(node_pointer hint) const {
+				node_pointer	tmp = hint;
+
+				while (tmp->left) {
+					tmp = tmp->left;
+				}
+				return tmp;
+			}
+
+			node_pointer	max(node_pointer hint) {
+				node_pointer	tmp = hint;
+
+				while (tmp->right) {
+					tmp = tmp->right;
+				}
+				return tmp;
+			}
+
+			const node_pointer	max(node_pointer hint) const {
+				node_pointer	tmp = hint;
+
+				while (tmp->right) {
+					tmp = tmp->right;
+				}
+				return tmp;
 			}
 	};
 };
