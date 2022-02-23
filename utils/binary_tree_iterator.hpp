@@ -29,7 +29,7 @@ namespace ft {
 			reference	operator*() const { return (this->_p->data); }
 			pointer		operator->() const { return (&(this->_p->data)); }
 
-			reference	operator[](difference_type index) const { return (*(_p + index)); }
+			reference	operator[](difference_type index) const { return (*((this->_p + index)->data)); }
 
 			binary_tree_iterator	&operator++() {
 				iterator_type	p;

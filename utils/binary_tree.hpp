@@ -95,11 +95,15 @@ namespace ft {
 				this->insert(this->_root, pair);
 			}
 
+			void	clear() {
+				
+			}
+
 			node_pointer	getRoot() {
 				return (this->_root);
 			}
 
-			node_pointer	getRoot() const {
+			const node_pointer	getRoot() const {
 				return (this->_root);
 			}
 

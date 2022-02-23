@@ -37,21 +37,44 @@ namespace ft {
 					}
 			};
 
-			/* constructors */
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
+				this->_size = 0;
 				this->_key_compare = comp;
 				this->_value_compare = value_compare();
 				this->_allocator = alloc;
 				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
 			}
 
-			/*template <class InputIterator>
-			map (InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type& alloc = allocator_type()) {
-				
-			}*/
-			/* constructors */
+			// ELEMENT ACCESS
+			mapped_type	&operator[](const key_type &k) {
+				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), k);
 
-			/* capacity */
+				if (lookup == this->end()) {
+					return this->insert(ft::make_pair(k, T())).first->second;
+				}
+				return lookup->second;
+			}
+			// ELEMENT ACCESS
+
+			// ITERATORS
+			iterator	begin() {
+				return this->_tree.begin();
+			}
+
+			const_iterator	begin() const {
+				return this->_tree.begin();
+			}
+
+			iterator	end() {
+				return this->_tree.end();
+			}
+
+			const_iterator	end() const {
+				return this->_tree.end();
+			}
+			// ITERATORS
+
+			// CAPACITY
 			bool		empty() const {
 				return (this->_size == 0);
 			}
@@ -63,20 +86,14 @@ namespace ft {
 			size_type	max_size() const {
 				return (this->_allocator.max_size());
 			}
-			/* capacity */
+			// CAPACITY
 
-			/* element access */
-			mapped_type	&operator[](const key_type &k) {
-				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), k);
-
-				if (lookup == this->end()) {
-					return this->insert(ft::make_pair(k, T())).first->second;
-				}
-				return lookup->second;
+			// MODIFIERS
+			void	clear() {
+				this->_size = 0;
+				this->_tree.clear();
 			}
-			/* element access */
 
-			/* modifiers */
 			ft::pair<iterator, bool>	insert(const value_type &val) {
 				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), val.first);
 
@@ -84,6 +101,7 @@ namespace ft {
 					return ft::make_pair(lookup, false);
 				}
 
+				this->_size++;
 				return ft::make_pair(this->_tree.insert(this->_tree.getRoot(), val), true);
 			}
 
@@ -94,6 +112,7 @@ namespace ft {
 					return lookup;
 				}
 
+				this->_size++;
 				return this->_tree.insert(position.base(), val);
 			}
 
@@ -101,11 +120,13 @@ namespace ft {
 			void	insert(InputIterator first, InputIterator last) {
 				while (first != last) {
 					this->insert(*first);
+					this->_size++;
 					first++;
 				}
 			}
 
-			/*void	erase(iterator position) {
+			/*
+			void	erase(iterator position) {
 
 			}
 
@@ -119,14 +140,10 @@ namespace ft {
 
 			void	swap(ft::map &x) {
 
-			}
-
-			void	clear() {
-
 			}*/
-			/* modifiers */
+			// MODIFIERS
 
-			/* lookup */
+			// LOOKUP
 			size_type count(const key_type &key) const {
 				return this->_tree.lookup(this->_tree.getRoot(), key) == this->end() ? 0 : 1;
 			}
@@ -178,28 +195,9 @@ namespace ft {
 			ft::pair<const_iterator, const_iterator> equal_range(const key_type &key) const {
 				return ft::make_pair(this->lower_bound(key), this->upper_bound(key));
 			}
-			/* lookup */
+			// LOOKUP
 
-			iterator	begin() {
-				return this->_tree.begin();
-			}
-
-			const_iterator	begin() const {
-				return this->_tree.begin();
-			}
-
-			iterator	end() {
-				return this->_tree.end();
-			}
-
-			const_iterator	end() const {
-				return this->_tree.end();
-			}
-
-			binary_tree<Key, T, allocator_type>	getTree() {
-				return this->_tree;
-			}
-
+			// OBSERVERS
 			key_compare	key_comp() const {
 				return _key_compare;
 			}
@@ -207,10 +205,10 @@ namespace ft {
 			value_compare	value_comp() const {
 				return _value_compare;
 			}
+			// OBSERVERS
 
 			private:
 				size_type		_size;
-				size_type		_capacity;
 				allocator_type	_allocator;
 				key_compare		_key_compare;
 				value_compare	_value_compare;
