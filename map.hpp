@@ -45,6 +45,16 @@ namespace ft {
 				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
 			}
 
+			template<class InputIt>
+			map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) {
+				this->_size = 0;
+				this->_key_compare = comp;
+				this->_value_compare = value_compare();
+				this->_allocator = alloc;
+				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
+				this->insert(first, last);
+			}
+
 			// ELEMENT ACCESS
 			mapped_type	&operator[](const key_type &k) {
 				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), k);
@@ -125,11 +135,12 @@ namespace ft {
 				}
 			}
 
-			/*
+			
 			void	erase(iterator position) {
-
+				this->_tree.erase(position);
 			}
 
+			/*
 			size_type	erase(const key_type &k) {
 
 			}

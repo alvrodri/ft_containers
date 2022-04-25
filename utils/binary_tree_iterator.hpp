@@ -19,12 +19,12 @@ namespace ft {
 			explicit binary_tree_iterator(iterator_type x, iterator_type root): _p(x), _root(root) {
 			}
 
-			template<class U, class U2> 
+			template<class U, class U2>
 			binary_tree_iterator(const binary_tree_iterator<U, U2> &other): _p(other.getCurrent()), _root(other.getRoot()) {
 			}
 
-			T			getCurrent() const { return this->_p;}
-			T			getRoot() const { return this->_root; }
+			iterator_type	getCurrent() const { return this->_p; }
+			iterator_type	getRoot() const { return this->_root; }
 
 			reference	operator*() const { return (this->_p->data); }
 			pointer		operator->() const { return (&(this->_p->data)); }
@@ -32,7 +32,7 @@ namespace ft {
 			reference	operator[](difference_type index) const { return (*((this->_p + index)->data)); }
 
 			binary_tree_iterator	&operator++() {
-				iterator_type	p;
+				iterator_type	p = NULL;
 
 				if (this->_p == NULL) {
 					this->_p = this->_root;
@@ -62,7 +62,7 @@ namespace ft {
 			binary_tree_iterator	operator+(difference_type n) const { binary_tree_iterator tmp(*this); tmp._p += n; return (tmp);}*/
 
 			binary_tree_iterator	&operator--() {
-				iterator_type	p;
+				iterator_type	p = NULL;
 
 				if (this->_p == NULL) {
 					this->_p = this->_root;
@@ -92,7 +92,7 @@ namespace ft {
 			binary_tree_iterator	operator-(difference_type n) const { binary_tree_iterator tmp(*this); tmp._p -= n; return (tmp);}*/
 
 			iterator_type	min(iterator_type node) {
-				iterator_type	ret;
+				iterator_type	ret = NULL;
 
 				ret = node;
 				while (ret->left)

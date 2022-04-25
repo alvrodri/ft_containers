@@ -8,42 +8,92 @@ namespace ft {
 	template<class T1, class T2, class Allocator>
 	class binary_tree {
 		private:
+			typedef enum {
+				RED,
+				BLACK
+			}		e_color;
+
 			typedef struct	s_node {
 				ft::pair<T1, T2>	data;
 				struct s_node		*parent;
 				struct s_node		*left;
 				struct s_node		*right;
+				e_color				color;
 
-				s_node(ft::pair<T1, T2> data): data(data), parent(NULL), left(NULL), right(NULL), color(BLACK) {}
-				s_node(ft::pair<T1, T2> data, t_color color): data(data), parent(NULL), left(NULL), right(NULL), color(color) {}
+				s_node(ft::pair<T1, T2> data): data(data), parent(NULL), left(NULL), right(NULL), color(RED) {}
 			}				t_node;
 
 			typedef Allocator											allocator;
 			typedef typename allocator::template rebind<t_node>::other	node_allocator;
 			typedef typename node_allocator::pointer					node_pointer;
+			typedef typename node_allocator::const_pointer				node_const_pointer;
 			typedef typename node_allocator::reference					node_reference;
 
 			node_allocator	_allocator;
 			node_pointer	_root;
+			node_pointer	_nil;
 		public:
 			typedef binary_tree_iterator<node_pointer, ft::pair<T1, T2> >		iterator;
-			typedef binary_tree_iterator<const node_pointer, ft::pair<T1, T2> >	const_iterator;
+			typedef binary_tree_iterator<node_const_pointer, ft::pair<T1, T2> >	const_iterator;
 
-			binary_tree(): _root(NULL), _size(0) {}
-
-			binary_tree(t_node *node): _root(node), _size(0) {}
-
-			binary_tree(ft::pair<T1, T2> pair): _size(1) {
-				this->_root = this->_allocator.allocate(1);
-				this->_allocator.construct(this->_root, t_node(pair));
+			binary_tree(): _root(NULL) {
+				this->_nil = _allocator.allocate(1);
+				this->_allocator.construct(_nil, ft::pair<T1, T2>());
+				this->_nil->color = BLACK;
+				this->_nil->left = _nil;
+				this->_nil->right = _nil;
 			}
 
-			virtual ~binary_tree() {
-				this->_allocator.deallocate(this->_root, this->_size);
+			node_pointer	createNode(ft::pair<T1, T2> &data) {
+				node_pointer	node = this->_allocator.allocate(1);
+
+				this->_allocator.construct(node, data);
+				node->parent = this->_nil;
+				node->left = this->_nil;
+				node->right = this->_nil;
+
+				return node;
 			}
 
-			iterator		lookup(node_pointer node, const T1 &key) const {
+			// Add insert fix
+			iterator	insert(node_pointer node, ft::pair<T1, T2> &data) {
+				if (this->_root == NULL) {
+					this->_root = this->createNode(data);
+					this->_root->color = BLACK;
+					return iterator(this->_root);
+				}
+
 				if (node == NULL) {
+					node = this->createNode(data);
+					return iterator(node);
+				}
+
+				if (data.first < node->data.first) {
+					return this->insert(node->left, data);
+				} else {
+					return this->insert(node->right, data);
+				}
+				return this->end();
+			}
+
+			iterator		lookup(node_pointer node, const T1 &key) {
+				if (node == this->_nil) {
+					return (this->end());
+				} else {
+					if (key == node->data.first) {
+						return (iterator(node, this->_root));
+					} else {
+						if (key < node->data.first)
+							return (this->lookup(node->left, key));
+						else
+							return (this->lookup(node->right, key));
+					}
+				}
+				return (this->end());
+			}
+
+			const_iterator		lookup(node_pointer node, const T1 &key) const {
+				if (node == this->_nil) {
 					return (this->end());
 				} else {
 					if (key == node->data.first)
@@ -58,34 +108,8 @@ namespace ft {
 				return (this->end());
 			}
 
-			iterator	insert(node_pointer	root, ft::pair<T1, T2> pair) {
-				node_pointer	node = this->_allocator.allocate(1);
-				this->_allocator.construct(node, t_node(pair));
-
-				if (root == NULL) {
-					this->_root = node;
-					return (iterator(node, this->_root));
-				}
-				node_pointer	parent = root->parent, current = root;
-				while (current != NULL) {
-					parent = current;
-					if (current->data.first <= pair.first) {
-						current = current->right;
-					} else {
-						current = current->left;
-					}
-				}
-				if (parent->data.first <= pair.first) {
-					parent->right = node;
-				} else {
-					parent->left = node;
-				}
-				node->parent = parent;
-				return (iterator(root, this->_root));
-			}
-
-			void	insert(ft::pair<T1, T2> pair) {
-				this->insert(this->_root, pair);
+			iterator	erase(iterator position) {
+				return iterator(deleteNode(this->_root, this->lookup(this->_root, position->first)->first), this->_root);
 			}
 
 			void	clear() {
