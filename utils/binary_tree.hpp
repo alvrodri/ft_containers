@@ -5,175 +5,189 @@
 #include "./binary_tree_iterator.hpp"
 
 namespace ft {
-	template<class T1, class T2, class Allocator>
+	template<class T>
+	struct	s_node {
+		T				value;
+
+		struct s_node	*parent;
+		struct s_node	*left;
+		struct s_node	*right;
+
+		s_node(void): parent(NULL), left(NULL), right(NULL) {}
+		s_node(const T &value): value(value), parent(NULL), left(NULL), right(NULL) {}
+
+		s_node	&operator=(const s_node &node) {
+			this->value = node.value;
+			return *this;
+		}
+	};
+
+	template<class T, class Compare, class Allocator = std::allocator<T> >
 	class binary_tree {
-		private:
-			typedef enum {
-				RED,
-				BLACK
-			}		e_color;
-
-			typedef struct	s_node {
-				ft::pair<T1, T2>	data;
-				struct s_node		*parent;
-				struct s_node		*left;
-				struct s_node		*right;
-				e_color				color;
-
-				s_node(ft::pair<T1, T2> data): data(data), parent(NULL), left(NULL), right(NULL), color(RED) {}
-			}				t_node;
-
-			typedef Allocator											allocator;
-			typedef typename allocator::template rebind<t_node>::other	node_allocator;
-			typedef typename node_allocator::pointer					node_pointer;
-			typedef typename node_allocator::const_pointer				node_const_pointer;
-			typedef typename node_allocator::reference					node_reference;
-
-			node_allocator	_allocator;
-			node_pointer	_root;
-			node_pointer	_nil;
 		public:
-			typedef binary_tree_iterator<node_pointer, ft::pair<T1, T2> >		iterator;
-			typedef binary_tree_iterator<node_const_pointer, ft::pair<T1, T2> >	const_iterator;
+			typedef	T																	value_type;
+			typedef typename Allocator::template rebind<ft::s_node<value_type> >::other	allocator_type;
+			typedef typename ft::s_node<value_type>										*node_pointer;
+			typedef const typename ft::s_node<value_type>								*const_node_pointer;
+			typedef Compare																compare_type;
 
-			binary_tree(): _root(NULL) {
-				this->_nil = _allocator.allocate(1);
-				this->_allocator.construct(_nil, ft::pair<T1, T2>());
-				this->_nil->color = BLACK;
-				this->_nil->left = _nil;
-				this->_nil->right = _nil;
+			allocator_type	_allocator;
+			node_pointer	_root;
+			compare_type	_compare;
+
+
+		public:
+			typedef binary_tree_iterator<node_pointer, value_type >			iterator;
+			typedef binary_tree_iterator<const_node_pointer, value_type >	const_iterator;
+
+			binary_tree(): _root(NULL), _allocator(allocator_type()), _compare(compare_type()) { }
+			binary_tree(const compare_type &comp): _root(NULL), _allocator(allocator_type()), _compare(comp) { }
+
+			binary_tree(const T &val, const compare_type &comp = compare_type()): _allocator(allocator_type()), _compare(comp) {
+				this->_root = this->_allocator.allocate(1);
+				this->_allocator.construct(this->_root, val);
+				this->_root->parent = NULL;
+				this->_root->left = NULL;
+				this->_root->right = NULL;
 			}
 
-			node_pointer	createNode(ft::pair<T1, T2> &data) {
-				node_pointer	node = this->_allocator.allocate(1);
-
-				this->_allocator.construct(node, data);
-				node->parent = this->_nil;
-				node->left = this->_nil;
-				node->right = this->_nil;
-
-				return node;
+			binary_tree(node_pointer node, const compare_type &comp = compare_type()) :  _root(node), _allocator(allocator_type()), _compare(comp) {
+				this->_root->parent = NULL;
+				this->_root->left = NULL;
+				this->_root->right = NULL;
 			}
 
-			// Add insert fix
-			iterator	insert(node_pointer node, ft::pair<T1, T2> &data) {
-				if (this->_root == NULL) {
-					this->_root = this->createNode(data);
-					this->_root->color = BLACK;
-					return iterator(this->_root);
+			~binary_tree(void) {}
+
+			void	insert(const T &value) {
+				node_pointer 	parent;
+				node_pointer 	tmp = this->_root;
+				node_pointer	to_insert = this->_allocator.allocate(1);
+
+				this->_allocator.construct(to_insert, ft::s_node<T>(value));
+
+				if (!this->_root) {
+					this->_root = to_insert;
+					return ;
 				}
+
+				while (tmp) {
+					parent = tmp;
+
+					if (_compare(parent->value, value)) {
+						tmp = tmp->right;
+					} else {
+						tmp = tmp->left;
+					}
+				}
+
+				if (_compare(parent->value, value)) {
+					parent->right = to_insert;
+				} else {
+					parent->left = to_insert;
+				}
+
+				to_insert->parent = parent;
+				to_insert->right = NULL;
+				to_insert->left = NULL;
+			}
+
+			void			delete_node(const T &value) {
+				this->delete_node(this->find(value));
+			}
+
+			void			delete_node(node_pointer node) {
+				node_pointer	parent = node->parent;
+				node_pointer	tmp;
 
 				if (node == NULL) {
-					node = this->createNode(data);
-					return iterator(node);
+					return ;
 				}
 
-				if (data.first < node->data.first) {
-					return this->insert(node->left, data);
-				} else {
-					return this->insert(node->right, data);
+				if (node->left == NULL && node->right == NULL) {
+					this->_allocator.destroy(node);
+					this->_allocator.deallocate(node, 1);
+					
+					if (parent != NULL) {
+						parent->left == node ? parent->left = NULL : parent->right = NULL;
+					}
+					return ;
 				}
-				return this->end();
-			}
 
-			iterator		lookup(node_pointer node, const T1 &key) {
-				if (node == this->_nil) {
-					return (this->end());
-				} else {
-					if (key == node->data.first) {
-						return (iterator(node, this->_root));
+				if ((node->left != NULL && node->right == NULL) || (node->right != NULL && node->left == NULL)) {
+					if (node->left) {
+						tmp = node->left;
 					} else {
-						if (key < node->data.first)
-							return (this->lookup(node->left, key));
-						else
-							return (this->lookup(node->right, key));
+						tmp = node->right;
+					}
+
+					if (node == this->_root) {
+						this->_root = tmp;
+					} else {
+						parent->left == node ? parent->left = tmp : parent->right = tmp;
+					}
+					tmp->parent = parent;
+
+					this->_allocator.destroy(node);
+					this->_allocator.deallocate(node, 1);
+					return ;
+				}
+
+				if (node->left != NULL && node->right != NULL) {
+					tmp = this->get_next(node->right);
+
+					if (parent->left == node) {
+						parent->left = tmp;
+					} else {
+						parent->right = tmp;
+					}
+					tmp->left = node->left;
+					tmp->right = node->right;
+					if (tmp->parent->left == tmp) {
+						tmp->parent->left = NULL;
+					} else {
+						tmp->parent->right = NULL;
+					}
+					tmp->parent = parent;
+
+					this->_allocator.destroy(node);
+					this->_allocator.deallocate(node, 1);
+					return ;
+				}
+				return ;
+			}
+
+			node_pointer	find(const T &value) const {
+				node_pointer node = this->_root;
+	
+				while (node) {
+					if (_compare(value, node->value)) {
+						node = node->left;
+					} else if (_compare(node->value, value)) {
+						node = node->right;
+					} else {
+						return node;
 					}
 				}
-				return (this->end());
+				return NULL;
 			}
 
-			const_iterator		lookup(node_pointer node, const T1 &key) const {
-				if (node == this->_nil) {
-					return (this->end());
-				} else {
-					if (key == node->data.first)
-						return (iterator(node, this->_root));
-					else {
-						if (key < node->data.first)
-							return (this->lookup(node->left, key));
-						else
-							return (this->lookup(node->right, key));
-					}
+			node_pointer	get_next(node_pointer node) {
+				node_pointer current = node;
+
+				while (current && current->left != NULL ){
+					current = current->left;
 				}
-				return (this->end());
+
+				return current;
 			}
 
-			iterator	erase(iterator position) {
-				return iterator(deleteNode(this->_root, this->lookup(this->_root, position->first)->first), this->_root);
-			}
-
-			void	clear() {
-
-			}
-
-			node_pointer	getRoot() {
-				return (this->_root);
-			}
-
-			const node_pointer	getRoot() const {
-				return (this->_root);
-			}
-
-			iterator	begin() {
-				return (iterator(min(this->_root), this->_root));
-			}
-
-			const_iterator	begin() const {
-				return (const_iterator(min(this->_root), this->_root));
-			}
-
-			iterator	end() {
-				return iterator(NULL, this->_root);
-			}
-
-			const_iterator	end() const {
-				return const_iterator(NULL, this->_root);
-			}
-		private:
-			node_pointer	min(node_pointer hint) {
-				node_pointer	tmp = hint;
-
-				while (tmp->left) {
-					tmp = tmp->left;
-				}
-				return tmp;
-			}
-
-			const node_pointer	min(node_pointer hint) const {
-				node_pointer	tmp = hint;
-
-				while (tmp->left) {
-					tmp = tmp->left;
-				}
-				return tmp;
-			}
-
-			node_pointer	max(node_pointer hint) {
-				node_pointer	tmp = hint;
-
-				while (tmp->right) {
-					tmp = tmp->right;
-				}
-				return tmp;
-			}
-
-			const node_pointer	max(node_pointer hint) const {
-				node_pointer	tmp = hint;
-
-				while (tmp->right) {
-					tmp = tmp->right;
-				}
-				return tmp;
+			void	inorder(node_pointer node) {
+				if (node == NULL)
+					return ;
+				this->inorder(node->left);
+				std::cout << node->value.first << " -> ";
+				this->inorder(node->right);
 			}
 	};
 };

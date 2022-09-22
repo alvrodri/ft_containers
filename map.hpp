@@ -29,8 +29,14 @@ namespace ft {
 				typedef typename tree_type::const_iterator	const_iterator;
 
 			class	value_compare {
+				protected:
+					Compare	comp;
 				public:
-					typedef Compare	comp;
+					typedef bool		result_type;
+					typedef value_type	first_argument_type;
+					typedef value_type	second_argument_type;
+
+					value_compare(Compare c): comp(c) {}
 
 					bool	operator()(const value_type &x, const value_type &y) const {
 						return (comp()(x.first, y.first));
@@ -67,7 +73,7 @@ namespace ft {
 			// ELEMENT ACCESS
 
 			// ITERATORS
-			iterator	begin() {
+			/*iterator	begin() {
 				return this->_tree.begin();
 			}
 
@@ -95,11 +101,11 @@ namespace ft {
 
 			size_type	max_size() const {
 				return (this->_allocator.max_size());
-			}
+			}*/
 			// CAPACITY
 
 			// MODIFIERS
-			void	clear() {
+			/*void	clear() {
 				this->_size = 0;
 				this->_tree.clear();
 			}
@@ -133,12 +139,12 @@ namespace ft {
 					this->_size++;
 					first++;
 				}
-			}
+			}*/
 
 			
-			void	erase(iterator position) {
+			/*void	erase(iterator position) {
 				this->_tree.erase(position);
-			}
+			}*/
 
 			/*
 			size_type	erase(const key_type &k) {
@@ -155,7 +161,7 @@ namespace ft {
 			// MODIFIERS
 
 			// LOOKUP
-			size_type count(const key_type &key) const {
+			/*size_type count(const key_type &key) const {
 				return this->_tree.lookup(this->_tree.getRoot(), key) == this->end() ? 0 : 1;
 			}
 
@@ -216,7 +222,7 @@ namespace ft {
 			value_compare	value_comp() const {
 				return _value_compare;
 			}
-			// OBSERVERS
+			// OBSERVERS*/
 
 			private:
 				size_type		_size;

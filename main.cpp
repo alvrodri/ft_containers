@@ -5,22 +5,26 @@
 #include "./utils/binary_tree_iterator.hpp"
 #include <vector>
 #include <map>
-#include "./map.hpp"
+#include "./vector.hpp"
 
 int	main() {
-	/*ft::map<int, int>	persons;
+	typedef ft::pair<int, int>	value_type;
 
-	persons.insert(ft::make_pair(10, 10));
-	persons.insert(ft::make_pair(11, 5));
-	persons.insert(ft::make_pair(12, 4));
-	persons.insert(ft::make_pair(13, 3));
+	ft::binary_tree<value_type, std::less<value_type> >	tree;
 
-	persons.erase(++persons.begin());
+	tree.insert(ft::make_pair(8, 0));
+	tree.insert(ft::make_pair(3, 0));
+	tree.insert(ft::make_pair(1, 0));
+	tree.insert(ft::make_pair(6, 0));
+	tree.insert(ft::make_pair(7, 0));
+	tree.insert(ft::make_pair(10, 0));
+	tree.insert(ft::make_pair(14, 0));
+	tree.insert(ft::make_pair(4, 0));
 
-	for (ft::map<int, int>::iterator it = persons.begin(); it != persons.end(); it++) {
-		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
-	}*/
-	ft::binary_tree<int, int, std::allocator<ft::pair<int, int> > >	tree;
+	tree.inorder(tree._root);
 
-	tree.insert()
+	tree.delete_node(ft::make_pair(3, 0));
+	std::cout << "\n" << std::endl;
+
+	tree.inorder(tree._root);
 }
