@@ -172,7 +172,7 @@ namespace ft {
 				return NULL;
 			}
 
-			node_pointer	get_next(node_pointer node) {
+			node_pointer	smallest(node_pointer node) {
 				node_pointer current = node;
 
 				while (current && current->left != NULL ){
@@ -182,12 +182,21 @@ namespace ft {
 				return current;
 			}
 
-			void	inorder(node_pointer node) {
-				if (node == NULL)
-					return ;
-				this->inorder(node->left);
-				std::cout << node->value.first << " -> ";
-				this->inorder(node->right);
+			node_pointer	bigger(node_pointer node) {
+				node_pointer current = node;
+
+				while (current && current->right != NULL) {
+					current = current->rightM
+				}
+				
+				return current;
+			}
+
+			void	swap(node_pointer a, node_pointer b) {
+				value_type value = a->value;
+
+				a->value = b->value;
+				b->value = value;
 			}
 	};
 };
