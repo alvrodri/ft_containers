@@ -35,8 +35,8 @@ namespace ft {
 			compare_type	_compare;
 
 		public:
-			binary_tree(): _root(NULL), _allocator(allocator_type()), _compare(KeyCompare()) { }
-			binary_tree(const compare_type &comp): _root(NULL), _allocator(allocator_type()), _compare(comp) { }
+			binary_tree(): _allocator(allocator_type()), _root(NULL), _compare(KeyCompare()) { }
+			binary_tree(const compare_type &comp): _allocator(allocator_type()), _root(NULL), _compare(comp) { }
 
 			binary_tree(const T &val, const compare_type &comp = compare_type()): _allocator(allocator_type()), _compare(comp) {
 				this->_root = this->_allocator.allocate(1);
@@ -133,7 +133,7 @@ namespace ft {
 				}
 
 				if (node->left != NULL && node->right != NULL) {
-					tmp = this->get_next(node->right);
+					tmp = this->smallest(node->right);
 
 					if (parent->left == node) {
 						parent->left = tmp;
@@ -181,8 +181,28 @@ namespace ft {
 				return current;
 			}
 
+			const_node_pointer	smallest(const_node_pointer node) const {
+				const_node_pointer current = node;
+
+				while (current && current->left != NULL ){
+					current = current->left;
+				}
+
+				return current;
+			}
+
 			node_pointer	bigger(node_pointer node) {
 				node_pointer current = node;
+
+				while (current && current->right != NULL) {
+					current = current->right;
+				}
+				
+				return current;
+			}
+
+			const_node_pointer	bigger(const_node_pointer node) {
+				const_node_pointer current = node;
 
 				while (current && current->right != NULL) {
 					current = current->right;

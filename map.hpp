@@ -3,6 +3,7 @@
 #include "./utils/pair.hpp"
 #include "./utils/utils.hpp"
 #include "./utils/binary_tree.hpp"
+#include "./utils/binary_tree_iterator.hpp"
 
 namespace ft {
 	template<
@@ -41,8 +42,8 @@ namespace ft {
 
 				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>						tree_type;
 
-				typedef typename ft::binary_tree_iterator<value_type, value_type, value_compare, key_compare>		iterator;
-				typedef typename ft::binary_tree_iterator<value_type, const value_type, value_compare, key_compare>	const_iterator;
+				typedef typename ft::binary_tree_iterator<value_type, value_type, value_compare, key_compare>				iterator;
+				typedef typename ft::binary_tree_iterator<value_type, const value_type, value_compare, key_compare, const>	const_iterator;
 
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
 				this->_size = 0;
@@ -55,7 +56,7 @@ namespace ft {
 				this->_size = 0;
 				this->_allocator = alloc;
 				this->_tree = tree_type(comp);
-				//TODO this->insert(first, last);
+				this->insert(first, last);
 			}
 
 			map(const map &copy) {
@@ -152,6 +153,7 @@ namespace ft {
 			}
 
 			iterator	insert(iterator hint, const value_type &value) {
+				(void)hint;
 				return this->insert(value).first;
 			}
 

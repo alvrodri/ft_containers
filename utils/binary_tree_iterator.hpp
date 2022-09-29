@@ -6,7 +6,9 @@
 #include "./pair.hpp"
 
 namespace ft {
-	template<typename T, typename Const, typename ValueCompare, typename KeyCompare>
+	struct None {};
+
+	template<typename T, typename Const, typename ValueCompare, typename KeyCompare, typename Coso = None>
 	class	binary_tree_iterator {
 		public:
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
@@ -14,12 +16,24 @@ namespace ft {
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::difference_type	difference_type;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, Const>::reference		reference;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, Const>::pointer		pointer;
-			typedef typename ft::s_node<value_type>													*node_pointer;
-			typedef typename ft::binary_tree<value_type, ValueCompare, KeyCompare>					*tree_pointer;
+			typedef typename ft::s_node<value_type>											*node_pointer;
+			typedef typename ft::binary_tree<value_type, ValueCompare, KeyCompare>				*tree_pointer;
 
 			binary_tree_iterator(): _tree(NULL), _p(NULL) {}
 			
-			binary_tree_iterator(node_pointer node, tree_pointer tree): _p(node), _tree(tree) {}
+			binary_tree_iterator(node_pointer node, tree_pointer tree): _tree(tree), _p(node) {}
+
+			template<class A, class B, class C, class D, class E> 
+			binary_tree_iterator(const binary_tree_iterator<A, B, C, D, E> &other) {
+				this->_p = other.getPointer();
+				this->_tree = other.getTree();
+			}
+
+			template<class A, class B, class C, class D, class E> 
+			binary_tree_iterator(binary_tree_iterator<A, B, C, D, E> &other) {
+				this->_p = other.getPointer();
+				this->_tree = other.getTree();
+			}
 
 			reference	operator*() const { return (this->_p->value); }
 			pointer		operator->() const { return (&(this->_p->value)); }
@@ -97,6 +111,22 @@ namespace ft {
 				while (ret->right)
 					ret = ret->right;
 				return ret;
+			}
+
+			bool	operator==(const binary_tree_iterator &a) const {
+				return this->_p == a.getPointer();
+			}
+			
+			bool	operator!=(const binary_tree_iterator &a) const {
+				return this->_p != a.getPointer();
+			}
+
+			node_pointer	getPointer() const {
+				return _p;
+			}
+
+			tree_pointer	getTree() const {
+				return _tree;
 			}
 		private:
 			tree_pointer	_tree;
