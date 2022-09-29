@@ -6,14 +6,14 @@
 #include "./pair.hpp"
 
 namespace ft {
-	template<typename T, typename ValueCompare, typename KeyCompare>
+	template<typename T, typename Const, typename ValueCompare, typename KeyCompare>
 	class	binary_tree_iterator {
 		public:
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::value_type			value_type;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::difference_type	difference_type;
-			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::pointer			pointer;
-			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::reference			reference;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, Const>::reference		reference;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, Const>::pointer		pointer;
 			typedef typename ft::s_node<value_type>													*node_pointer;
 			typedef typename ft::binary_tree<value_type, ValueCompare, KeyCompare>					*tree_pointer;
 

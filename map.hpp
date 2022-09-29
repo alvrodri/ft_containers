@@ -39,9 +39,10 @@ namespace ft {
 						}
 				};
 
-				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>			tree_type;
+				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>						tree_type;
 
-				typedef typename ft::binary_tree_iterator<value_type, value_compare, key_compare>	iterator;
+				typedef typename ft::binary_tree_iterator<value_type, value_type, value_compare, key_compare>		iterator;
+				typedef typename ft::binary_tree_iterator<value_type, const value_type, value_compare, key_compare>	const_iterator;
 
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
 				this->_size = 0;
@@ -68,13 +69,52 @@ namespace ft {
 				// borrar todo TODO
 			}
 
+			/* ELEMENT ACCESS */
+			T	&operator[](const Key &key) {
+				typename tree_type::node_pointer	node = this->_tree.find(ft::make_pair(key, mapped_type()));
+				
+				if (!node) {
+					return this->insert(ft::make_pair(key, mapped_type())).first->second;
+				}
+				return node->value.second;
+			}
+
+			T	&at(const Key &key) {
+				typename tree_type::node_pointer	node = this->_tree.find(ft::make_pair(key, mapped_type()));
+
+				if (!node) {
+					throw std::out_of_range("at out of range");
+				}
+
+				return node->value.second;
+			}
+
+			const T	&at(const Key &key) const {
+				typename tree_type::node_pointer	node = this->_tree.find(ft::make_pair(key, mapped_type()));
+
+				if (!node) {
+					throw std::out_of_range("at out of range");
+				}
+
+				return node->value.second;
+			}
+			/* ELEMENT ACCESS */
+
 			/* ITERATORS */
 			iterator	begin() {
 				return iterator(this->_tree.smallest(this->_tree._root), &this->_tree);
 			}
 
+			const_iterator	begin() const {
+				return const_iterator(this->_tree.smallest(this->_tree._root), &this->_tree);
+			}
+
 			iterator	end() {
 				return iterator(NULL, &this->_tree);
+			}
+
+			const_iterator	end() const {
+				return const_iterator(NULL, &this->_tree);
 			}
 			/* ITERATORS */
 

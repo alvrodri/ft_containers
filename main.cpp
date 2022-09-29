@@ -11,7 +11,9 @@
 int	main() {
 	ft::map<int, std::string> m;
 
+	m[10] = "hola";
 
+	std::cout << m.at(10) << std::endl;
 	/*
 	typedef ft::pair<int, int>	value_type;
 
