@@ -6,11 +6,11 @@
 #    By: alvrodri <alvrodri@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/12 17:35:33 by alvrodri          #+#    #+#              #
-#    Updated: 2022/09/22 11:36:10 by alvrodri         ###   ########.fr        #
+#    Updated: 2022/09/29 10:36:08 by alvrodri         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ex00
+NAME = ft_containers
 
 SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)

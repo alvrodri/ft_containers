@@ -6,8 +6,13 @@
 #include <vector>
 #include <map>
 #include "./vector.hpp"
+#include "./map.hpp"
 
 int	main() {
+	ft::map<int, std::string> m;
+
+
+	/*
 	typedef ft::pair<int, int>	value_type;
 
 	ft::binary_tree<value_type, std::less<value_type> >	tree;
@@ -23,8 +28,9 @@ int	main() {
 
 	tree.inorder(tree._root);
 
-	tree.delete_node(ft::make_pair(3, 0));
+	tree.delete_node(ft::make_pair(8, 0));
 	std::cout << "\n" << std::endl;
 
 	tree.inorder(tree._root);
+	*/
 }

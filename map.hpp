@@ -23,165 +23,140 @@ namespace ft {
 				typedef typename allocator_type::const_reference					const_reference;
 				typedef typename allocator_type::pointer							pointer;
 				typedef typename allocator_type::const_pointer						const_pointer;
-				typedef binary_tree<key_type, mapped_type, allocator_type>			tree_type;
 
-				typedef typename tree_type::iterator		iterator;
-				typedef typename tree_type::const_iterator	const_iterator;
+				class	value_compare {
+					protected:
+						Compare	comp;
+					public:
+						typedef bool		result_type;
+						typedef value_type	first_argument_type;
+						typedef value_type	second_argument_type;
 
-			class	value_compare {
-				protected:
-					Compare	comp;
-				public:
-					typedef bool		result_type;
-					typedef value_type	first_argument_type;
-					typedef value_type	second_argument_type;
+						value_compare(Compare c): comp(c) {}
 
-					value_compare(Compare c): comp(c) {}
+						bool	operator()(const value_type &x, const value_type &y) const {
+							return (comp(x.first, y.first));
+						}
+				};
 
-					bool	operator()(const value_type &x, const value_type &y) const {
-						return (comp()(x.first, y.first));
-					}
-			};
+				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>			tree_type;
+
+				typedef typename ft::binary_tree_iterator<value_type, value_compare, key_compare>	iterator;
 
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
 				this->_size = 0;
-				this->_key_compare = comp;
-				this->_value_compare = value_compare();
 				this->_allocator = alloc;
-				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
+				this->_tree = tree_type(comp);
 			}
 
 			template<class InputIt>
-			map(InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator()) {
+			map(InputIt first, InputIt last, const key_compare &comp = key_compare(), const allocator_type &alloc = Allocator()) {
 				this->_size = 0;
-				this->_key_compare = comp;
-				this->_value_compare = value_compare();
 				this->_allocator = alloc;
-				this->_tree = binary_tree<key_type, mapped_type, allocator_type>();
-				this->insert(first, last);
+				this->_tree = tree_type(comp);
+				//TODO this->insert(first, last);
 			}
 
-			// ELEMENT ACCESS
-			mapped_type	&operator[](const key_type &k) {
-				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), k);
-
-				if (lookup == this->end()) {
-					return this->insert(ft::make_pair(k, T())).first->second;
-				}
-				return lookup->second;
-			}
-			// ELEMENT ACCESS
-
-			// ITERATORS
-			/*iterator	begin() {
-				return this->_tree.begin();
+			map(const map &copy) {
+				this->_allocator = allocator_type();
+				this->_tree = tree_type();
+				this->_size = 0;
+				*this = copy;
 			}
 
-			const_iterator	begin() const {
-				return this->_tree.begin();
+			~map(void) {
+				// borrar todo TODO
+			}
+
+			/* ITERATORS */
+			iterator	begin() {
+				return iterator(this->_tree.smallest(this->_tree._root), &this->_tree);
 			}
 
 			iterator	end() {
-				return this->_tree.end();
+				return iterator(NULL, &this->_tree);
 			}
+			/* ITERATORS */
 
-			const_iterator	end() const {
-				return this->_tree.end();
-			}
-			// ITERATORS
-
-			// CAPACITY
-			bool		empty() const {
-				return (this->_size == 0);
+			/* CAPACITY */
+			bool	empty() const {
+				return this->_size == 0;
 			}
 
 			size_type	size() const {
-				return (this->_size);
+				return this->_size;
 			}
 
 			size_type	max_size() const {
-				return (this->_allocator.max_size());
-			}*/
-			// CAPACITY
+				return this->_allocator.max_size();
+			}
+			/* CAPACITY */
 
-			// MODIFIERS
-			/*void	clear() {
-				this->_size = 0;
-				this->_tree.clear();
+			/* MODIFIERS */
+			void	clear() {
+				while (this->_size != 0) {
+					this->_tree.delete_node(this->_tree.smallest(this->_tree._root));
+					this->_size--;
+				}
 			}
 
-			ft::pair<iterator, bool>	insert(const value_type &val) {
-				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), val.first);
+			ft::pair<iterator, bool>	insert(const value_type &value) {
+				typename tree_type::node_pointer	node = this->_tree.find(value);
 
-				if (lookup != this->end()) {
-					return ft::make_pair(lookup, false);
+				if (node) {
+					return ft::make_pair(iterator(node, &this->_tree), false);
 				}
 
 				this->_size++;
-				return ft::make_pair(this->_tree.insert(this->_tree.getRoot(), val), true);
+				return ft::make_pair(iterator(this->_tree.insert(value), &this->_tree), true);
 			}
 
-			iterator	insert(iterator position, const value_type &val) {
-				iterator	lookup = this->_tree.lookup(this->_tree.getRoot(), val.first);
-
-				if (lookup != this->end()) {
-					return lookup;
-				}
-
-				this->_size++;
-				return this->_tree.insert(position.base(), val);
+			iterator	insert(iterator hint, const value_type &value) {
+				return this->insert(value).first;
 			}
 
-			template<class InputIterator>
-			void	insert(InputIterator first, InputIterator last) {
+			template<class InputIt>
+			void insert(InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type * = NULL) {
 				while (first != last) {
 					this->insert(*first);
-					this->_size++;
 					first++;
 				}
-			}*/
-
-			
-			/*void	erase(iterator position) {
-				this->_tree.erase(position);
-			}*/
-
-			/*
-			size_type	erase(const key_type &k) {
-
 			}
 
-			void	erase(iterator first, iterator last) {
+			iterator	erase(iterator pos) {
+				this->_tree.delete_node(this->_tree.find(*pos));
+				this->_size--;
 
+				return this->end();
 			}
 
-			void	swap(ft::map &x) {
+			size_type	erase(const Key &key) {
+				typename tree_type::node_pointer	node = this->_tree.find(ft::make_pair(key, mapped_type()));
+				
+				if (node) {
+					this->_tree.delete_node(node);
+					this->_size--;
+					return 1;
+				}
+				return 0;
+			}
+			/* MODIFIERS */
 
-			}*/
-			// MODIFIERS
-
-			// LOOKUP
-			/*size_type count(const key_type &key) const {
-				return this->_tree.lookup(this->_tree.getRoot(), key) == this->end() ? 0 : 1;
+			/* LOOKUP */
+			size_type	count(const Key &key) const {
+				return this->find(key) == this->end() ? 0 : 1;
 			}
 
-			iterator	find(const key_type &key) {
-				return this->_tree.lookup(this->_tree.getRoot(), key);
-			}
+			iterator	find(const Key &key) {
+				typename tree_type::node_pointer	node = this->_tree.find(ft::make_pair(key, mapped_type()));
 
-			const_iterator	find(const key_type &key) const {
-				return this->_tree.lookup(this->_tree.getRoot(), key);
-			}
-
-			iterator	lower_bound(const key_type &key) {
-				for (iterator it = this->begin(); it != this->end(); it++) {
-					if (value_comp()(ft::make_pair(key, mapped_type()), *it) || it->first == key)
-						return it;
+				if (node) {
+					return iterator(node, &this->_tree);
 				}
 				return this->end();
 			}
 
-			const_iterator	lower_bound(const key_type &key) const {
+			iterator	lower_bound(const key_type &key) {
 				for (iterator it = this->begin(); it != this->end(); it++) {
 					if (value_comp()(ft::make_pair(key, mapped_type()), *it) || it->first == key)
 						return it;
@@ -197,38 +172,24 @@ namespace ft {
 				return this->end();
 			}
 
-			const_iterator	upper_bound(const key_type &key) const {
-				for (iterator it = this->begin(); it != this->end(); it++) {
-					if (!value_comp()(ft::make_pair(key, mapped_type()), *it))
-						return it;
-				}
-				return this->end();
-			}
-
 			ft::pair<iterator, iterator> equal_range(const key_type &key) {
 				return ft::make_pair(this->lower_bound(key), this->upper_bound(key));
 			}
+			/* LOOKUP */
 
-			ft::pair<const_iterator, const_iterator> equal_range(const key_type &key) const {
-				return ft::make_pair(this->lower_bound(key), this->upper_bound(key));
-			}
-			// LOOKUP
-
-			// OBSERVERS
+			/* OBSERVERS */
 			key_compare	key_comp() const {
-				return _key_compare;
+				return key_compare();
 			}
 
 			value_compare	value_comp() const {
-				return _value_compare;
+				return value_compare();
 			}
-			// OBSERVERS*/
+			/* OBSERVERS */
 
 			private:
 				size_type		_size;
 				allocator_type	_allocator;
-				key_compare		_key_compare;
-				value_compare	_value_compare;
 				tree_type		_tree;
 		};
 };

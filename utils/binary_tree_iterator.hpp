@@ -6,38 +6,33 @@
 #include "./pair.hpp"
 
 namespace ft {
-	template<typename T, typename Pair>
-	class	binary_tree_iterator : public ft::s_iterator<std::bidirectional_iterator_tag, T> {
+	template<typename T, typename ValueCompare, typename KeyCompare>
+	class	binary_tree_iterator {
 		public:
-			typedef T				iterator_type;
-			typedef Pair			value_type;
-			typedef value_type*		pointer;
-			typedef value_type&		reference;
-			typedef ptrdiff_t		difference_type;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::value_type			value_type;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::difference_type	difference_type;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::pointer			pointer;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::reference			reference;
+			typedef typename ft::s_node<value_type>													*node_pointer;
+			typedef typename ft::binary_tree<value_type, ValueCompare, KeyCompare>					*tree_pointer;
 
-			binary_tree_iterator(): _p(NULL), _root(NULL) {}
-			explicit binary_tree_iterator(iterator_type x, iterator_type root): _p(x), _root(root) {
-			}
+			binary_tree_iterator(): _tree(NULL), _p(NULL) {}
+			
+			binary_tree_iterator(node_pointer node, tree_pointer tree): _p(node), _tree(tree) {}
 
-			template<class U, class U2>
-			binary_tree_iterator(const binary_tree_iterator<U, U2> &other): _p(other.getCurrent()), _root(other.getRoot()) {
-			}
-
-			iterator_type	getCurrent() const { return this->_p; }
-			iterator_type	getRoot() const { return this->_root; }
-
-			reference	operator*() const { return (this->_p->data); }
-			pointer		operator->() const { return (&(this->_p->data)); }
+			reference	operator*() const { return (this->_p->value); }
+			pointer		operator->() const { return (&(this->_p->value)); }
 
 			reference	operator[](difference_type index) const { return (*((this->_p + index)->data)); }
 
 			binary_tree_iterator	&operator++() {
-				iterator_type	p = NULL;
+				node_pointer	p = NULL;
 
 				if (this->_p == NULL) {
-					this->_p = this->_root;
+					this->_p = this->_tree->_root;
 					if (this->_p == NULL)
-						return *this; // arbol vacío
+						return *this;
 					this->_p = this->min(this->_p);
 					return *this;
 				}
@@ -58,14 +53,12 @@ namespace ft {
 			}
 
 			binary_tree_iterator	operator++(int) {binary_tree_iterator tmp(*this); operator++(); return (tmp); }
-			/*binary_tree_iterator	&operator+=(difference_type n) { this->_p += n; return (*this); }
-			binary_tree_iterator	operator+(difference_type n) const { binary_tree_iterator tmp(*this); tmp._p += n; return (tmp);}*/
 
 			binary_tree_iterator	&operator--() {
-				iterator_type	p = NULL;
+				node_pointer	p = NULL;
 
 				if (this->_p == NULL) {
-					this->_p = this->_root;
+					this->_p = this->_tree->_root;
 					if (this->_p == NULL)
 						return *this; // arbol vacío
 					this->_p = this->max(this->_p);
@@ -86,13 +79,10 @@ namespace ft {
 				return *this;
 			}
 
-			
 			binary_tree_iterator	operator--(int) { binary_tree_iterator tmp(*this); operator--(); return (tmp); }
-			/*binary_tree_iterator	&operator-=(difference_type n) { this->_p -= n; return (*this); }
-			binary_tree_iterator	operator-(difference_type n) const { binary_tree_iterator tmp(*this); tmp._p -= n; return (tmp);}*/
 
-			iterator_type	min(iterator_type node) {
-				iterator_type	ret = NULL;
+			node_pointer	min(node_pointer node) {
+				node_pointer	ret = NULL;
 
 				ret = node;
 				while (ret->left)
@@ -100,8 +90,8 @@ namespace ft {
 				return ret;
 			}
 
-			iterator_type	max(iterator_type node) {
-				iterator_type	ret;
+			node_pointer	max(node_pointer node) {
+				node_pointer	ret;
 
 				ret = node;
 				while (ret->right)
@@ -109,17 +99,7 @@ namespace ft {
 				return ret;
 			}
 		private:
-			iterator_type	_p;
-			iterator_type	_root;
+			tree_pointer	_tree;
+			node_pointer	_p;
 	};
-
-	template<class A, class B, class P1, class P2>
-	bool	operator==(const binary_tree_iterator<A, P1>& lhs, const binary_tree_iterator<B, P2>& rhs) {
-		return lhs.getCurrent() == rhs.getCurrent();
-	}
-
-	template<class A, class B, class P1, class P2>
-	bool	operator!=(const binary_tree_iterator<A, P1>& lhs, const binary_tree_iterator<B, P2>& rhs) {
-		return lhs.getCurrent() != rhs.getCurrent();
-	}
 };

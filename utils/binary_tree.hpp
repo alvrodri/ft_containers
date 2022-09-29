@@ -2,7 +2,6 @@
 
 #include "./utils.hpp"
 #include "./pair.hpp"
-#include "./binary_tree_iterator.hpp"
 
 namespace ft {
 	template<class T>
@@ -22,25 +21,21 @@ namespace ft {
 		}
 	};
 
-	template<class T, class Compare, class Allocator = std::allocator<T> >
+	template<class T, class ValueCompare, class KeyCompare, class Allocator = std::allocator<T> >
 	class binary_tree {
 		public:
 			typedef	T																	value_type;
 			typedef typename Allocator::template rebind<ft::s_node<value_type> >::other	allocator_type;
 			typedef typename ft::s_node<value_type>										*node_pointer;
 			typedef const typename ft::s_node<value_type>								*const_node_pointer;
-			typedef Compare																compare_type;
+			typedef ValueCompare														compare_type;
 
 			allocator_type	_allocator;
 			node_pointer	_root;
 			compare_type	_compare;
 
-
 		public:
-			typedef binary_tree_iterator<node_pointer, value_type >			iterator;
-			typedef binary_tree_iterator<const_node_pointer, value_type >	const_iterator;
-
-			binary_tree(): _root(NULL), _allocator(allocator_type()), _compare(compare_type()) { }
+			binary_tree(): _root(NULL), _allocator(allocator_type()), _compare(KeyCompare()) { }
 			binary_tree(const compare_type &comp): _root(NULL), _allocator(allocator_type()), _compare(comp) { }
 
 			binary_tree(const T &val, const compare_type &comp = compare_type()): _allocator(allocator_type()), _compare(comp) {
@@ -59,7 +54,7 @@ namespace ft {
 
 			~binary_tree(void) {}
 
-			void	insert(const T &value) {
+			node_pointer	insert(const T &value) {
 				node_pointer 	parent;
 				node_pointer 	tmp = this->_root;
 				node_pointer	to_insert = this->_allocator.allocate(1);
@@ -68,7 +63,7 @@ namespace ft {
 
 				if (!this->_root) {
 					this->_root = to_insert;
-					return ;
+					return this->_root;
 				}
 
 				while (tmp) {
@@ -90,6 +85,8 @@ namespace ft {
 				to_insert->parent = parent;
 				to_insert->right = NULL;
 				to_insert->left = NULL;
+
+				return to_insert;
 			}
 
 			void			delete_node(const T &value) {
@@ -97,6 +94,8 @@ namespace ft {
 			}
 
 			void			delete_node(node_pointer node) {
+				// CRASH SI SE BORRA EL ROOT.
+
 				node_pointer	parent = node->parent;
 				node_pointer	tmp;
 
@@ -186,7 +185,7 @@ namespace ft {
 				node_pointer current = node;
 
 				while (current && current->right != NULL) {
-					current = current->rightM
+					current = current->right;
 				}
 				
 				return current;
