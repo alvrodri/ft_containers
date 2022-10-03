@@ -7,28 +7,28 @@
 
 namespace ft {
 	template<typename T, typename ValueCompare, typename KeyCompare>
-	class	binary_tree_iterator {
+	class	binary_tree_const_iterator {
 		public:
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::iterator_category	iterator_category;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::value_type			value_type;
 			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::difference_type	difference_type;
-			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::reference			reference;
-			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, T>::pointer			pointer;
-			typedef typename ft::s_node<value_type>													*node_pointer;
-			typedef typename ft::binary_tree<value_type, ValueCompare, KeyCompare>					*tree_pointer;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, const T>::reference	reference;
+			typedef typename ft::s_iterator<std::bidirectional_iterator_tag, const T>::pointer		pointer;
+			typedef const typename ft::s_node<value_type>											*node_pointer;
+			typedef const typename ft::binary_tree<value_type, ValueCompare, KeyCompare>			*tree_pointer;
 
-			binary_tree_iterator(): _tree(NULL), _p(NULL) {}
+			binary_tree_const_iterator(): _tree(NULL), _p(NULL) {}
 			
-			binary_tree_iterator(node_pointer node, tree_pointer tree): _tree(tree), _p(node) {}
+			binary_tree_const_iterator(node_pointer node, tree_pointer tree): _tree(tree), _p(node) {}
 
 			template<class A, class B, class C> 
-			binary_tree_iterator(const binary_tree_iterator<A, B, C> &other) {
+			binary_tree_const_iterator(const binary_tree_const_iterator<A, B, C> &other) {
 				this->_p = other.getPointer();
 				this->_tree = other.getTree();
 			}
 
 			template<class A, class B, class C> 
-			binary_tree_iterator(binary_tree_iterator<A, B, C> &other) {
+			binary_tree_const_iterator(binary_tree_const_iterator<A, B, C> &other) {
 				this->_p = other.getPointer();
 				this->_tree = other.getTree();
 			}
@@ -38,7 +38,7 @@ namespace ft {
 
 			reference	operator[](difference_type index) const { return (*((this->_p + index)->data)); }
 
-			binary_tree_iterator	&operator++() {
+			binary_tree_const_iterator	&operator++() {
 				node_pointer	p = NULL;
 
 				if (this->_p == NULL) {
@@ -64,9 +64,9 @@ namespace ft {
 				return *this;
 			}
 
-			binary_tree_iterator	operator++(int) {binary_tree_iterator tmp(*this); operator++(); return (tmp); }
+			binary_tree_const_iterator	operator++(int) {binary_tree_const_iterator tmp(*this); operator++(); return (tmp); }
 
-			binary_tree_iterator	&operator--() {
+			binary_tree_const_iterator	&operator--() {
 				node_pointer	p = NULL;
 
 				if (this->_p == NULL) {
@@ -91,7 +91,7 @@ namespace ft {
 				return *this;
 			}
 
-			binary_tree_iterator	operator--(int) { binary_tree_iterator tmp(*this); operator--(); return (tmp); }
+			binary_tree_const_iterator	operator--(int) { binary_tree_const_iterator tmp(*this); operator--(); return (tmp); }
 
 			node_pointer	min(node_pointer node) {
 				node_pointer	ret = NULL;
@@ -111,11 +111,11 @@ namespace ft {
 				return ret;
 			}
 
-			bool	operator==(const binary_tree_iterator &a) const {
+			bool	operator==(const binary_tree_const_iterator &a) const {
 				return this->_p == a.getPointer();
 			}
 			
-			bool	operator!=(const binary_tree_iterator &a) const {
+			bool	operator!=(const binary_tree_const_iterator &a) const {
 				return this->_p != a.getPointer();
 			}
 

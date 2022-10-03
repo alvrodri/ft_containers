@@ -4,6 +4,7 @@
 #include "./utils/utils.hpp"
 #include "./utils/binary_tree.hpp"
 #include "./utils/binary_tree_iterator.hpp"
+#include "./utils/binary_tree_const_iterator.hpp"
 
 namespace ft {
 	template<
@@ -40,10 +41,10 @@ namespace ft {
 						}
 				};
 
-				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>						tree_type;
+				typedef binary_tree<value_type, value_compare, key_compare, allocator_type>				tree_type;
 
-				typedef typename ft::binary_tree_iterator<value_type, value_type, value_compare, key_compare>				iterator;
-				typedef typename ft::binary_tree_iterator<value_type, const value_type, value_compare, key_compare, const>	const_iterator;
+				typedef typename ft::binary_tree_iterator<value_type, value_compare, key_compare>		iterator;
+				typedef typename ft::binary_tree_const_iterator<value_type, value_compare, key_compare>	const_iterator;
 
 			explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) {
 				this->_size = 0;
@@ -135,7 +136,7 @@ namespace ft {
 
 			/* MODIFIERS */
 			void	clear() {
-				while (this->_size != 0) {
+				while (this->_size > 0) {
 					this->_tree.delete_node(this->_tree.smallest(this->_tree._root));
 					this->_size--;
 				}
