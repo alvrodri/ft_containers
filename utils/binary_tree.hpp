@@ -95,80 +95,63 @@ namespace ft {
 
 			void			delete_node(node_pointer node) {
 				node_pointer	parent = node->parent;
-				node_pointer	tmp;
+				node_pointer	child;
 
-				if (node == NULL) {
-					return ;
-				}
-
-				if (node->left == NULL && node->right == NULL) {
-					this->_allocator.destroy(node);
-					this->_allocator.deallocate(node, 1);
-					
-					if (parent != NULL) {
-						parent->left == node ? parent->left = NULL : parent->right = NULL;
+				if (!node->left && !node->right) {
+					if (node != this->_root && node == node->parent->left) {
+						node->parent->left = NULL;
+					} else if (node != this->_root && node == node->parent->right) {
+						node->parent->right = NULL;
 					}
-
 					if (node == this->_root) {
 						this->_root = NULL;
 					}
-					return ;
-				}
-
-				if ((node->left != NULL && node->right == NULL) || (node->right != NULL && node->left == NULL)) {
-					if (node->left) {
-						tmp = node->left;
+					this->_allocator.destroy(node);
+					this->_allocator.deallocate(node, 1);
+				} else if ((node->left && !node->right) || (node->right && !node->left)) {
+					if (node->right) {
+						child = node->right;
 					} else {
-						tmp = node->right;
+						child = node->left;
 					}
-
 					if (node == this->_root) {
-						this->_root = tmp;
+						this->_root = child;
 					} else {
-						parent->left == node ? parent->left = tmp : parent->right = tmp;
+						if (node == parent->right) {
+							parent->right = child;
+						} else {
+							parent->left = child;
+						}
 					}
-					tmp->parent = parent;
-
+					child->parent = parent;
 					this->_allocator.destroy(node);
 					this->_allocator.deallocate(node, 1);
-					return ;
-				}
+					node = NULL;
+				} else {
+					child = this->bigger(node->left);
 
-				if (node->left != NULL && node->right != NULL) {
-					tmp = this->smallest(node->right);
+					swap(node, child);
+					parent = child->parent;
 
-					if (!parent) {
-						this->_root = this->bigger(node->left);
-
-						if (node->left != this->_root)
-							this->_root->left = node->left;
-						if (node->right != this->_root)
-							this->_root->right = node->right;
-
-						this->_allocator.destroy(node);
-						this->_allocator.deallocate(node, 1);
-						node = NULL;
-						return ;
-					}
-
-					if (parent->left == node) {
-						parent->left = tmp;
+					node = child;
+					if (node->left) {
+						if (node == node->parent->right) {
+							node->parent->right = node->left;
+						} else {
+							node->parent->left = node->left;
+						}
+						node->left->parent = node->parent;
 					} else {
-						parent->right = tmp;
+						if (node->parent->left == node) {
+							node->parent->left = NULL;
+						} else {
+							node->parent->right = NULL;
+						}
 					}
-					tmp->left = node->left;
-					tmp->right = node->right;
-					if (tmp->parent->left == tmp) {
-						tmp->parent->left = NULL;
-					} else {
-						tmp->parent->right = NULL;
-					}
-					tmp->parent = parent;
-
 					this->_allocator.destroy(node);
 					this->_allocator.deallocate(node, 1);
+					node = NULL;
 				}
-				return ;
 			}
 
 			node_pointer	find(const T &value) const {
