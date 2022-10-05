@@ -94,8 +94,6 @@ namespace ft {
 			}
 
 			void			delete_node(node_pointer node) {
-				// CRASH SI SE BORRA EL ROOT.
-
 				node_pointer	parent = node->parent;
 				node_pointer	tmp;
 
@@ -109,6 +107,10 @@ namespace ft {
 					
 					if (parent != NULL) {
 						parent->left == node ? parent->left = NULL : parent->right = NULL;
+					}
+
+					if (node == this->_root) {
+						this->_root = NULL;
 					}
 					return ;
 				}
@@ -135,6 +137,20 @@ namespace ft {
 				if (node->left != NULL && node->right != NULL) {
 					tmp = this->smallest(node->right);
 
+					if (!parent) {
+						this->_root = this->bigger(node->left);
+
+						if (node->left != this->_root)
+							this->_root->left = node->left;
+						if (node->right != this->_root)
+							this->_root->right = node->right;
+
+						this->_allocator.destroy(node);
+						this->_allocator.deallocate(node, 1);
+						node = NULL;
+						return ;
+					}
+
 					if (parent->left == node) {
 						parent->left = tmp;
 					} else {
@@ -151,7 +167,6 @@ namespace ft {
 
 					this->_allocator.destroy(node);
 					this->_allocator.deallocate(node, 1);
-					return ;
 				}
 				return ;
 			}

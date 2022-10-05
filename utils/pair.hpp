@@ -1,6 +1,16 @@
 #pragma once
 
 namespace ft {
+	template<class T>
+	struct remove_const {
+		typedef T type;
+	};
+	
+	template<class T>
+	struct remove_const<const T> {
+		typedef T type;
+	};
+
 	template<class T1, class T2>
 	struct pair {
 		typedef T1	first_type;
@@ -16,11 +26,10 @@ namespace ft {
 
 		pair(const first_type &a, const second_type &b): first(a), second(b) {}
 
-		pair	&operator=(const pair &other) {
-			this->first = other.first;
-			this->second = other.second;
-
-			return (*this);
+		pair	&operator=(const pair &pr) {
+			const_cast<typename ft::remove_const<first_type>::type&>(this->first) = pr.first;
+			const_cast<typename ft::remove_const<second_type>::type&>(this->second) = pr.second;
+			return *this;
 		}
 	};
 
