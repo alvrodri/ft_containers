@@ -4,6 +4,11 @@
 #include "./pair.hpp"
 
 namespace ft {
+	enum Color {
+		RED,
+		BLACK
+	};
+
 	template<class T>
 	struct	s_node {
 		T				value;
@@ -12,8 +17,10 @@ namespace ft {
 		struct s_node	*left;
 		struct s_node	*right;
 
-		s_node(void): parent(NULL), left(NULL), right(NULL) {}
-		s_node(const T &value): value(value), parent(NULL), left(NULL), right(NULL) {}
+		enum Color		color;
+
+		s_node(void): parent(NULL), left(NULL), right(NULL), color(RED) {}
+		s_node(const T &value): value(value), parent(NULL), left(NULL), right(NULL), color(RED) {}
 
 		s_node	&operator=(const s_node &node) {
 			this->value = node.value;
@@ -63,6 +70,7 @@ namespace ft {
 
 				if (!this->_root) {
 					this->_root = to_insert;
+					this->_root.color = BLACK;
 					return this->_root;
 				}
 
@@ -85,6 +93,8 @@ namespace ft {
 				to_insert->parent = parent;
 				to_insert->right = NULL;
 				to_insert->left = NULL;
+
+				this->insertFix();
 
 				return to_insert;
 			}
@@ -126,7 +136,6 @@ namespace ft {
 					child->parent = parent;
 					this->_allocator.destroy(node);
 					this->_allocator.deallocate(node, 1);
-					node = NULL;
 				} else {
 					child = this->bigger(node->left);
 
@@ -150,8 +159,8 @@ namespace ft {
 					}
 					this->_allocator.destroy(node);
 					this->_allocator.deallocate(node, 1);
-					node = NULL;
 				}
+				node = NULL;
 			}
 
 			node_pointer	find(const T &value) const {
@@ -214,6 +223,55 @@ namespace ft {
 
 				a->value = b->value;
 				b->value = value;
+			}
+
+			void	leftRotate(node_pointer node) {
+				node_pointer	y = node->right;
+
+				if (y == NULL) {
+					return ;
+				}
+
+				node->right = y->left;
+				if (y->left != NULL) {
+					y->left->parent = node;
+				}
+				y->parent = node->parent;
+				if (node->parent == NULL) {
+					this->_root = y;
+				} else if (node == node->parent->left) {
+					node->parent->left = y;
+				} else {
+					node->parent->right = y;
+				}
+				y->left = node;
+				node->parent = y;
+			}
+
+			void	rightRotate(node_pointer node) {
+				node_pointer	y = node->left;
+
+				if (y == NULL) {
+					return ;
+				}
+
+				node->left = y->right;
+				if (y->right != NULL) {
+					y->right->parent = node;
+				}
+				y->parent = node->parent;
+				if (node->parent == NULL) {
+					this->_root = y;
+				} else if (node == node->parent->right) {
+					node->parent->right = y;
+				} else {
+					node->parent->left = y;
+				}
+				y->right = node;
+				node->parent = y;
+			}
+
+			void	insertFix(node_pointer node) {
 			}
 	};
 };
