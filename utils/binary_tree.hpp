@@ -70,7 +70,7 @@ namespace ft {
 
 				if (!this->_root) {
 					this->_root = to_insert;
-					this->_root.color = BLACK;
+					this->_root->color = BLACK;
 					return this->_root;
 				}
 
@@ -93,8 +93,6 @@ namespace ft {
 				to_insert->parent = parent;
 				to_insert->right = NULL;
 				to_insert->left = NULL;
-
-				this->insertFix();
 
 				return to_insert;
 			}
@@ -269,9 +267,6 @@ namespace ft {
 				}
 				y->right = node;
 				node->parent = y;
-			}
-
-			void	insertFix(node_pointer node) {
 			}
 	};
 };
