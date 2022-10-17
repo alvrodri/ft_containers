@@ -59,7 +59,9 @@ namespace ft {
 				this->_root->right = NULL;
 			}
 
-			~binary_tree(void) {}
+			~binary_tree(void) {
+				
+			}
 
 			node_pointer	insert(const T &value) {
 				node_pointer 	parent;
@@ -93,8 +95,13 @@ namespace ft {
 				to_insert->parent = parent;
 				to_insert->right = NULL;
 				to_insert->left = NULL;
+				to_insert->color = RED;
 
+				this->insertFix(to_insert);
 				return to_insert;
+			}
+
+			void	insertFix(node_pointer) {
 			}
 
 			void			delete_node(const T &value) {
