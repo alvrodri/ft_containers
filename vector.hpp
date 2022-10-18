@@ -164,6 +164,7 @@ namespace ft {
 					this->_allocator.construct(this->_pointer + i, *(tmp + i));
 				}
 				this->_capacity = new_cap;
+				this->_allocator.deallocate(tmp, this->_capacity);
 			}
 
 			size_type	capacity() const {

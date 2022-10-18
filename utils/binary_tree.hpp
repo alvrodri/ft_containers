@@ -26,6 +26,18 @@ namespace ft {
 			this->value = node.value;
 			return *this;
 		}
+
+		s_node	*getUncle() {
+			if (!this->parent || !this->parent->parent) {
+				return NULL;
+			}
+
+			if (this->parent->parent->left == this->parent) {
+				return this->parent->parent->right;
+			} else {
+				return this->parent->parent->left;
+			}
+		}
 	};
 
 	template<class T, class ValueCompare, class KeyCompare, class Allocator = std::allocator<T> >
@@ -95,13 +107,60 @@ namespace ft {
 				to_insert->parent = parent;
 				to_insert->right = NULL;
 				to_insert->left = NULL;
-				to_insert->color = RED;
 
 				this->insertFix(to_insert);
+
 				return to_insert;
 			}
 
-			void	insertFix(node_pointer) {
+			void	insertFix(node_pointer inserted) {
+				node_pointer	uncle;
+
+				while (inserted->parent->color == RED) {
+					uncle = inserted->getUncle();
+
+					if (inserted->parent == inserted->parent->parent->left) {
+						if (uncle && uncle->color == RED) {
+							this->switchColor(inserted);
+
+							inserted = inserted->parent->parent;
+						} else {
+							if (inserted == inserted->parent->right) {
+								inserted = inserted->parent;
+
+								leftRotate(inserted);
+							}
+
+							inserted->parent->color = BLACK;
+							inserted->parent->parent->color = RED;
+
+							rightRotate(inserted->parent->parent);
+						}
+					} else {
+						if (uncle && uncle->color == RED) {
+							this->switchColor(inserted);
+
+							inserted = inserted->parent->parent;
+						} else {
+							if (inserted == inserted->parent->left) {
+								inserted = inserted->parent;
+
+								this->rightRotate(inserted);
+							}
+
+							inserted->parent->color = BLACK;
+							inserted->parent->parent->color = RED;
+
+							this->leftRotate(inserted->parent->parent);
+						}
+					}
+
+					if (inserted == this->_root) {
+						break ;
+					}
+				}
+				
+				this->_root->color = BLACK;
 			}
 
 			void			delete_node(const T &value) {
@@ -274,6 +333,17 @@ namespace ft {
 				}
 				y->right = node;
 				node->parent = y;
+			}
+
+			void	switchColor(node_pointer node) {
+				node_pointer uncle = node->getUncle();
+
+				if (uncle) {
+					uncle->color = BLACK;
+				}
+
+				node->parent->color = BLACK;
+				node->parent->parent->color = RED;
 			}
 	};
 };
